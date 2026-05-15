@@ -1,13 +1,12 @@
-import { useState, useMemo } from "react";
 import { Header } from "@/widgets/header/ui/header";
-import { Sidebar } from "@/widgets/sidebar/ui/sidebar";
 import { Catalog } from "@/widgets/catalog/ui/catalog";
 import { Footer } from "@/widgets/footer/ui/footer";
 import { CartSidebar } from "@/widgets/cart-sidebar/ui/cart-sidebar";
 import { AnimatedBackground } from "@/shared/ui/animated-background";
 import { categories } from "@/shared/data/categories";
 import { products } from "@/shared/data/products";
-import type { Product, CartItem } from "@/shared/types";
+import type { Product, CartItem, Category } from "@/shared/types";
+import { useState, useMemo } from "react";
 
 export default function CatalogPage() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
@@ -16,16 +15,18 @@ export default function CatalogPage() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
 
-  const handleToggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const handleCloseMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
+  // Get all subcategories as flat list for category selector
+  const allSubcategories = useMemo(() => {
+    const subs: Category[] = [];
+    categories.forEach(cat => {
+      if (cat.children) {
+        subs.push(...cat.children);
+      }
+    });
+    return subs;
+  }, []);
 
   // Filter products by category and search query
   const filteredProducts = useMemo(() => {
@@ -90,9 +91,10 @@ export default function CatalogPage() {
     setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
-  const handleSubmitCart = (data: { email: string; comment: string }) => {
+  const handleSubmitCart = (data: { email: string; comment: string; phone: string }) => {
     console.log('Заявка отправлена:', { items: cartItems, ...data });
     setIsCartSidebarOpen(false);
+    setCartItems([]);
   };
 
   const handleToggleCartSidebar = () => {
@@ -124,30 +126,22 @@ export default function CatalogPage() {
     <AnimatedBackground>
       <div className="min-h-screen flex flex-col">
         <Header
-          totalProducts={filteredProducts.length}
           cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-          onSearch={setSearchQuery}
-          onMenuToggle={handleToggleMobileMenu}
-          isMobileMenuOpen={isMobileMenuOpen}
           onCartToggle={handleToggleCartSidebar}
         />
 
-        <main className="flex-1 max-w-480 mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
-          <div className="flex gap-4 sm:gap-6">
-            <Sidebar
-              categories={categories}
-              activeCategoryId={activeCategoryId}
-              activeSubcategoryId={activeSubcategoryId}
-              onSelectCategory={handleSelectCategory}
-              isOpen={isMobileMenuOpen}
-              onClose={handleCloseMobileMenu}
-            />
-
-            <Catalog
-              products={filteredProducts}
-              onAddToCart={handleAddToCart}
-            />
-          </div>
+        <main className="flex-1 max-w-[1600px] mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
+          <Catalog
+            products={filteredProducts}
+            categories={categories}
+            allSubcategories={allSubcategories}
+            activeCategoryId={activeCategoryId}
+            activeSubcategoryId={activeSubcategoryId}
+            searchQuery={searchQuery}
+            onSelectCategory={handleSelectCategory}
+            onSearch={setSearchQuery}
+            onAddToCart={handleAddToCart}
+          />
         </main>
 
         <Footer />
