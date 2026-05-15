@@ -9,10 +9,11 @@ interface HeaderProps {
   cartCount: number;
   onSearch: (query: string) => void;
   onMenuToggle?: () => void;
+  onCartToggle?: () => void;
   isMobileMenuOpen?: boolean;
 }
 
-export function Header({ totalProducts, cartCount, onSearch, onMenuToggle, isMobileMenuOpen }: HeaderProps) {
+export function Header({ totalProducts, cartCount, onSearch, onMenuToggle, onCartToggle, isMobileMenuOpen }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +79,12 @@ export function Header({ totalProducts, cartCount, onSearch, onMenuToggle, isMob
                 <span className="text-zinc-500 text-sm hidden lg:inline">товаров</span>
               </div>
               
-              <Button variant="glass" size="sm" className="relative shrink-0">
+              <Button 
+                variant="glass" 
+                size="sm" 
+                className="relative shrink-0 cursor-pointer"
+                onClick={onCartToggle}
+              >
                 <ShoppingCart size={16} className="sm:mr-2" />
                 <span className="hidden sm:inline">Заявка</span>
                 {cartCount > 0 && (

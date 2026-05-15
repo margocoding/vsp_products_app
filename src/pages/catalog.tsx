@@ -3,10 +3,11 @@ import { Header } from "@/widgets/header/ui/header";
 import { Sidebar } from "@/widgets/sidebar/ui/sidebar";
 import { Catalog } from "@/widgets/catalog/ui/catalog";
 import { Footer } from "@/widgets/footer/ui/footer";
+import { CartSidebar } from "@/widgets/cart-sidebar/ui/cart-sidebar";
 import { AnimatedBackground } from "@/shared/ui/animated-background";
 import { categories } from "@/shared/data/categories";
 import { products } from "@/shared/data/products";
-import type { Product } from "@/shared/types";
+import type { Product, CartItem } from "@/shared/types";
 
 export default function CatalogPage() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
@@ -14,8 +15,9 @@ export default function CatalogPage() {
     null,
   );
   const [searchQuery, setSearchQuery] = useState("");
-  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
 
   const handleToggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -59,7 +61,46 @@ export default function CatalogPage() {
   }, [activeCategoryId, activeSubcategoryId, searchQuery]);
 
   const handleAddToCart = (product: Product) => {
-    setCartItems((prev) => [...prev, product]);
+    setCartItems((prev) => {
+      const existingItem = prev.find((item) => item.product.id === product.id);
+      if (existingItem) {
+        return prev.map((item) =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { product, quantity: 1 }];
+    });
+  };
+
+  const handleUpdateQuantity = (productId: number, quantity: number) => {
+    if (quantity <= 0) {
+      setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
+    } else {
+      setCartItems((prev) =>
+        prev.map((item) =>
+          item.product.id === productId ? { ...item, quantity } : item
+        )
+      );
+    }
+  };
+
+  const handleRemoveItem = (productId: number) => {
+    setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
+  };
+
+  const handleSubmitCart = (data: { email: string; comment: string }) => {
+    console.log('Заявка отправлена:', { items: cartItems, ...data });
+    setIsCartSidebarOpen(false);
+  };
+
+  const handleToggleCartSidebar = () => {
+    setIsCartSidebarOpen(!isCartSidebarOpen);
+  };
+
+  const handleCloseCartSidebar = () => {
+    setIsCartSidebarOpen(false);
   };
 
   const handleSelectCategory = (categoryId: number | null) => {
@@ -84,10 +125,11 @@ export default function CatalogPage() {
       <div className="min-h-screen flex flex-col">
         <Header
           totalProducts={filteredProducts.length}
-          cartCount={cartItems.length}
+          cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
           onSearch={setSearchQuery}
           onMenuToggle={handleToggleMobileMenu}
           isMobileMenuOpen={isMobileMenuOpen}
+          onCartToggle={handleToggleCartSidebar}
         />
 
         <main className="flex-1 max-w-480 mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
@@ -109,6 +151,15 @@ export default function CatalogPage() {
         </main>
 
         <Footer />
+        
+        <CartSidebar
+          isOpen={isCartSidebarOpen}
+          onClose={handleCloseCartSidebar}
+          items={cartItems}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          onSubmit={handleSubmitCart}
+        />
       </div>
     </AnimatedBackground>
   );
