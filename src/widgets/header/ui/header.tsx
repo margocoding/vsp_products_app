@@ -63,7 +63,7 @@ export function Header({
                   value={searchQuery}
                   onChange={(e) => onSearch(e.target.value)}
                   icon={<Search size={16} />}
-                  className="h-9 !rounded-lg max-md:hidden !bg-zinc-900/50 !border-zinc-800 focus:!border-red-900/50 focus:!ring-red-900/30 text-sm"
+                  className="h-9 !rounded-lg !bg-zinc-900/50 !border-zinc-800 focus:!border-red-900/50 focus:!ring-red-900/30 text-sm"
                 />
                 {searchQuery && (
                   <button
@@ -105,28 +105,6 @@ export function Header({
                   </span>
                 )}
               </Button>
-            </div>
-          </div>
-
-          {/* Mobile Search */}
-          <div className="mt-3 md:hidden">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Поиск товаров..."
-                value={searchQuery}
-                onChange={(e) => onSearch(e.target.value)}
-                icon={<Search size={16} />}
-                className="h-9 !rounded-lg !bg-zinc-900/50 !border-zinc-800 focus:!border-red-900/50 focus:!ring-red-900/30 text-sm"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => onSearch("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 hover:text-zinc-300 transition-colors"
-                >
-                  <X size={14} />
-                </button>
-              )}
             </div>
           </div>
         </div>
