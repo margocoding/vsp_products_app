@@ -1,15 +1,7 @@
-<<<<<<< HEAD
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import type { Category } from "@/shared/types";
-=======
-import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
-import { cn } from '@/shared/lib/cn';
-import type { Category } from '@/shared/types';
->>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
 
 interface CategoryItemProps {
   category: Category;
@@ -38,19 +30,11 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
     <div>
       <div
         className={cn(
-<<<<<<< HEAD
-          "flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-300",
+          "flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200",
           "group select-none relative",
           isActive
-            ? "bg-red-500/15 border border-red-500/40 shadow-lg shadow-red-500/10"
+            ? "bg-red-500/10 border border-red-500/30"
             : "hover:bg-white/5 hover:border-white/10 border border-transparent",
-=======
-          'flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200',
-          'group select-none relative',
-          isActive 
-            ? 'bg-red-500/10 border border-red-500/30' 
-            : 'hover:bg-white/5 hover:border-white/10 border border-transparent'
->>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
         )}
         onClick={handleClick}
       >
@@ -58,7 +42,7 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
           <div
             className={cn(
               "text-zinc-400 group-hover:text-zinc-300 transition-transform duration-200",
-              isExpanded && "rotate-90"
+              isExpanded && "rotate-90",
             )}
           >
             <ChevronRight size={16} />
@@ -69,45 +53,16 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
 
         <span
           className={cn(
-<<<<<<< HEAD
-            "text-sm font-medium transition-colors duration-300",
+            "text-sm font-medium transition-colors duration-200",
             isActive
               ? "text-red-400"
               : "text-zinc-300 group-hover:text-zinc-100",
-=======
-            'text-sm font-medium transition-colors duration-200',
-            isActive ? 'text-red-400' : 'text-zinc-300 group-hover:text-zinc-100'
->>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
           )}
         >
           {category.name}
         </span>
       </div>
 
-<<<<<<< HEAD
-      <AnimatePresence>
-        {hasChildren && isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <div className="ml-4 pl-4 border-l border-white/5 space-y-1 mt-1">
-              {category.children!.map((child) => (
-                <CategoryItem
-                  key={child.id}
-                  category={child}
-                  isActive={isActive}
-                  onSelect={onSelect}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-=======
       {hasChildren && isExpanded && (
         <div className="ml-4 pl-4 border-l border-white/5 space-y-1 mt-1">
           {category.children!.map((child) => (
@@ -120,7 +75,6 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
           ))}
         </div>
       )}
->>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
     </div>
   );
 }
@@ -149,8 +103,10 @@ export function Sidebar({
               <CategoryItem
                 key={category.id}
                 category={category}
-                isActive={activeCategoryId === category.id || 
-                  !!category.children?.some(c => c.id === activeCategoryId)}
+                isActive={
+                  activeCategoryId === category.id ||
+                  !!category.children?.some((c) => c.id === activeCategoryId)
+                }
                 onSelect={onSelectCategory}
               />
             ))}
