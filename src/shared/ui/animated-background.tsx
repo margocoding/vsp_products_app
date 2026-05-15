@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion';
-
 interface AnimatedBackgroundProps {
   children: React.ReactNode;
 }
@@ -10,63 +8,24 @@ export function AnimatedBackground({ children }: AnimatedBackgroundProps) {
       {/* Deep background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-black" />
       
-      {/* Large blur spheres - Soft Red */}
-      <motion.div
-        className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-red-800/15 rounded-full blur-[120px]"
-        animate={{
-          x: [0, 50, 0],
-          y: [0, 30, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+      {/* Large blur spheres - Soft Red - No animation for performance */}
+      <div
+        className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-red-800/10 rounded-full blur-[120px]"
       />
       
       {/* Large blur spheres - Soft Burgundy/Dark Red */}
-      <motion.div
-        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#7f1d1d]/20 rounded-full blur-[100px]"
-        animate={{
-          x: [0, -40, 0],
-          y: [0, -50, 0],
-          scale: [1, 1.05, 1],
-        }}
-        transition={{
-          duration: 18,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+      <div
+        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#7f1d1d]/12 rounded-full blur-[100px]"
       />
       
       {/* Purple/Violet sphere - Softer */}
-      <motion.div
-        className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-purple-900/12 rounded-full blur-[80px]"
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -40, 0],
-          scale: [1, 1.08, 1],
-        }}
-        transition={{
-          duration: 22,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+      <div
+        className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-purple-900/8 rounded-full blur-[80px]"
       />
       
       {/* Additional crimson glow - Softer */}
-      <motion.div
-        className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-crimson/10 rounded-full blur-[60px]"
-        animate={{
-          x: [0, -20, 0],
-          y: [0, 40, 0],
-        }}
-        transition={{
-          duration: 15,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+      <div
+        className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-crimson/6 rounded-full blur-[60px]"
       />
       
       {/* Noise texture overlay */}

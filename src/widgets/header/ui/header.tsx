@@ -21,13 +21,13 @@ export function Header({ totalProducts, cartCount, onSearch }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="bg-white/5 backdrop-blur-xl border-b border-white/10">
+      <div className="bg-white/3 backdrop-blur-xl border-b border-white/8">
         <div className="max-w-[1920px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between gap-6">
             {/* Logo and Phone */}
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-600 to-crimson flex items-center justify-center shadow-lg shadow-red-500/30">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-900/70 to-red-950/70 flex items-center justify-center shadow-md shadow-red-950/20">
                   <span className="text-white font-bold text-lg">Л</span>
                 </div>
                 <div>
@@ -38,7 +38,7 @@ export function Header({ totalProducts, cartCount, onSearch }: HeaderProps) {
               
               <a 
                 href="tel:+79995448055"
-                className="hidden lg:flex items-center gap-2 text-zinc-300 hover:text-red-400 transition-colors duration-300"
+                className="hidden lg:flex items-center gap-2 text-zinc-400 hover:text-red-300 transition-colors duration-200"
               >
                 <Phone size={16} />
                 <span className="font-medium">+7 999 544 80 55</span>
@@ -59,7 +59,7 @@ export function Header({ totalProducts, cartCount, onSearch }: HeaderProps) {
 
             {/* Right side */}
             <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
+              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-white/3 backdrop-blur-sm rounded-lg border border-white/6">
                 <span className="text-zinc-400 text-sm">{totalProducts}</span>
                 <span className="text-zinc-500 text-sm">товаров</span>
               </div>
@@ -67,7 +67,7 @@ export function Header({ totalProducts, cartCount, onSearch }: HeaderProps) {
               <Button variant="glass" size="md" className="relative">
                 <ShoppingCart size={18} className="mr-2" />
                 Заявка {cartCount > 0 && (
-                  <span className="ml-1.5 px-2 py-0.5 text-xs bg-red-500 text-white rounded-full">
+                  <span className="ml-1.5 px-2 py-0.5 text-xs bg-red-900/70 text-red-200 rounded-full">
                     {cartCount}
                   </span>
                 )}

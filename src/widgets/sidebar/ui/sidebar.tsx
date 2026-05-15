@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import type { Category } from "@/shared/types";
+=======
+import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { cn } from '@/shared/lib/cn';
+import type { Category } from '@/shared/types';
+>>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
 
 interface CategoryItemProps {
   category: Category;
@@ -16,13 +23,21 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
 
   return (
     <div>
-      <motion.div
+      <div
         className={cn(
+<<<<<<< HEAD
           "flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-300",
           "group select-none relative",
           isActive
             ? "bg-red-500/15 border border-red-500/40 shadow-lg shadow-red-500/10"
             : "hover:bg-white/5 hover:border-white/10 border border-transparent",
+=======
+          'flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200',
+          'group select-none relative',
+          isActive 
+            ? 'bg-red-500/10 border border-red-500/30' 
+            : 'hover:bg-white/5 hover:border-white/10 border border-transparent'
+>>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
         )}
         onClick={() => {
           if (hasChildren) {
@@ -30,33 +45,38 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
           }
           onSelect(category.id);
         }}
-        whileHover={{ x: 4 }}
-        whileTap={{ scale: 0.98 }}
       >
         {hasChildren ? (
-          <motion.div
-            animate={{ rotate: isExpanded ? 90 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="text-zinc-400 group-hover:text-zinc-300"
+          <div
+            className={cn(
+              "text-zinc-400 group-hover:text-zinc-300 transition-transform duration-200",
+              isExpanded && "rotate-90"
+            )}
           >
             <ChevronRight size={16} />
-          </motion.div>
+          </div>
         ) : (
           <div className="w-4" />
         )}
 
         <span
           className={cn(
+<<<<<<< HEAD
             "text-sm font-medium transition-colors duration-300",
             isActive
               ? "text-red-400"
               : "text-zinc-300 group-hover:text-zinc-100",
+=======
+            'text-sm font-medium transition-colors duration-200',
+            isActive ? 'text-red-400' : 'text-zinc-300 group-hover:text-zinc-100'
+>>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
           )}
         >
           {category.name}
         </span>
-      </motion.div>
+      </div>
 
+<<<<<<< HEAD
       <AnimatePresence>
         {hasChildren && isExpanded && (
           <motion.div
@@ -79,6 +99,20 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
           </motion.div>
         )}
       </AnimatePresence>
+=======
+      {hasChildren && isExpanded && (
+        <div className="ml-4 pl-4 border-l border-white/5 space-y-1 mt-1">
+          {category.children!.map((child) => (
+            <CategoryItem
+              key={child.id}
+              category={child}
+              isActive={isActive}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+      )}
+>>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
     </div>
   );
 }

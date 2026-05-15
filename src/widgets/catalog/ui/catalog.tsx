@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpDown, ArrowUpAZ, ArrowDownAZ, SlidersHorizontal, ShoppingCart, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
@@ -129,24 +128,15 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
 
       {/* Products Table */}
       <div className="space-y-3">
-        <AnimatePresence mode="wait">
-          {paginatedProducts.map((product, index) => (
-            <motion.div
-              key={`${product.id}-${currentPage}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2, delay: index * 0.02 }}
-            >
-              <ProductRow
-                product={product}
-                isAdded={addedProducts.has(product.id)}
-                onAddToCart={() => handleAddToCart(product)}
-                formatPrice={formatPrice}
-              />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        {paginatedProducts.map((product) => (
+          <ProductRow
+            key={product.id}
+            product={product}
+            isAdded={addedProducts.has(product.id)}
+            onAddToCart={() => handleAddToCart(product)}
+            formatPrice={formatPrice}
+          />
+        ))}
         
         {paginatedProducts.length === 0 && (
           <GlassPanel className="p-12 text-center">
@@ -243,11 +233,11 @@ function ProductRow({ product, isAdded, onAddToCart, formatPrice }: ProductRowPr
     >
       <div className="flex items-center gap-4">
         {/* Image */}
-        <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/10">
+        <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/3 border border-white/6">
           <img
             src={product.picture}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-full object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23333" width="80" height="80"/%3E%3Ctext fill="%23666" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
             }}
@@ -258,7 +248,7 @@ function ProductRow({ product, isAdded, onAddToCart, formatPrice }: ProductRowPr
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className="text-zinc-100 font-medium group-hover:text-red-400 transition-colors duration-300 line-clamp-2">
+              <h3 className="text-zinc-200 font-medium line-clamp-2">
                 {product.name}
               </h3>
               
@@ -274,7 +264,7 @@ function ProductRow({ product, isAdded, onAddToCart, formatPrice }: ProductRowPr
             {/* Price and Action */}
             <div className="flex items-center gap-4 flex-shrink-0">
               <div className="text-right">
-                <div className="text-xl font-bold text-zinc-100 group-hover:text-red-400 transition-colors duration-300">
+                <div className="text-xl font-bold text-zinc-200">
                   {formatPrice(product.price)}
                 </div>
                 {product.available ? (
@@ -293,7 +283,7 @@ function ProductRow({ product, isAdded, onAddToCart, formatPrice }: ProductRowPr
                 }}
                 className={cn(
                   'min-w-[120px]',
-                  isAdded && 'bg-emerald-600 hover:bg-emerald-500'
+                  isAdded && 'bg-emerald-700/60 hover:bg-emerald-700/50'
                 )}
               >
                 {isAdded ? (
