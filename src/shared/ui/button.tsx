@@ -13,15 +13,15 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           'inline-flex items-center justify-center font-medium transition-all duration-200 rounded-lg',
-          'focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:ring-offset-2 focus:ring-offset-transparent',
+          'focus:outline-none focus:ring-2 focus:ring-red-900/30 focus:ring-offset-2 focus:ring-offset-transparent',
           {
-            primary: 'bg-gradient-to-r from-red-900/60 to-red-950/60 hover:from-red-800/50 hover:to-red-900/50 text-red-200 shadow-md shadow-red-950/15 border border-red-800/25',
-            secondary: 'bg-zinc-800/40 hover:bg-zinc-700/30 text-zinc-300 border border-zinc-700/30',
-            ghost: 'hover:bg-red-500/3 text-zinc-400 hover:text-red-300',
-            glass: 'bg-white/2 hover:bg-white/4 backdrop-blur-xl border border-white/6 text-zinc-300 hover:border-red-500/15'
+            primary: 'bg-red-700 hover:bg-red-800 text-white shadow-md shadow-red-900/20',
+            secondary: 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700',
+            ghost: 'hover:bg-white/5 text-zinc-400 hover:text-white',
+            glass: 'bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 text-zinc-300 hover:border-white/20'
           }[variant],
           {
-            sm: 'px-3 py-1.5 text-sm',
+            sm: 'px-3 py-1.5 text-xs',
             md: 'px-4 py-2 text-sm',
             lg: 'px-6 py-3 text-base'
           }[size],
