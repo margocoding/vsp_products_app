@@ -15,6 +15,15 @@ export default function CatalogPage() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleToggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleCloseMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   // Filter products by category and search query
   const filteredProducts = useMemo(() => {
@@ -77,15 +86,19 @@ export default function CatalogPage() {
           totalProducts={filteredProducts.length}
           cartCount={cartItems.length}
           onSearch={setSearchQuery}
+          onMenuToggle={handleToggleMobileMenu}
+          isMobileMenuOpen={isMobileMenuOpen}
         />
 
-        <main className="flex-1 max-w-480 mx-auto w-full px-6 py-8">
-          <div className="flex gap-6">
+        <main className="flex-1 max-w-480 mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
+          <div className="flex gap-4 sm:gap-6">
             <Sidebar
               categories={categories}
               activeCategoryId={activeCategoryId}
               activeSubcategoryId={activeSubcategoryId}
               onSelectCategory={handleSelectCategory}
+              isOpen={isMobileMenuOpen}
+              onClose={handleCloseMobileMenu}
             />
 
             <Catalog
