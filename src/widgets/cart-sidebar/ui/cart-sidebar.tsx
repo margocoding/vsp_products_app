@@ -1,4 +1,12 @@
-import { X, Minus, Plus, Trash2, ShoppingBag, Mail, MessageSquare } from "lucide-react";
+import {
+  X,
+  Minus,
+  Plus,
+  Trash2,
+  ShoppingBag,
+  Mail,
+  MessageSquare,
+} from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { GlassPanel } from "@/shared/ui/glass-panel";
@@ -28,10 +36,10 @@ export function CartSidebar({
   );
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ru-RU', {
-      style: 'currency',
-      currency: 'RUB',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+      minimumFractionDigits: 0,
     }).format(price);
   };
 
@@ -83,7 +91,9 @@ export function CartSidebar({
                 <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
                   <ShoppingBag size={40} className="text-zinc-600" />
                 </div>
-                <p className="text-zinc-400 text-base font-medium">Заявка пуста</p>
+                <p className="text-zinc-400 text-base font-medium">
+                  Заявка пуста
+                </p>
                 <p className="text-zinc-600 text-sm mt-2">
                   Добавьте товары из каталога
                 </p>
@@ -158,12 +168,12 @@ export function CartSidebar({
                       </div>
 
                       {/* Price */}
-                      <div className="text-right flex flex-col justify-between">
+                      <div className="text-right mt-auto flex flex-col justify-between">
                         <div>
                           <p className="text-base font-bold text-zinc-100">
-                            {(item.product.price * item.quantity).toLocaleString(
-                              "ru-RU",
-                            )}{" "}
+                            {(
+                              item.product.price * item.quantity
+                            ).toLocaleString("ru-RU")}{" "}
                             ₽
                           </p>
                           <p className="text-xs text-zinc-500">
@@ -184,7 +194,9 @@ export function CartSidebar({
               {/* Total */}
               <GlassPanel className="mb-4 p-4 bg-gradient-to-r from-red-900/10 to-transparent border-red-800/20">
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm font-medium">Итого:</span>
+                  <span className="text-zinc-400 text-sm font-medium">
+                    Итого:
+                  </span>
                   <span className="text-2xl font-bold bg-gradient-to-r from-red-300 to-red-400 bg-clip-text text-transparent">
                     {total.toLocaleString("ru-RU")} ₽
                   </span>
