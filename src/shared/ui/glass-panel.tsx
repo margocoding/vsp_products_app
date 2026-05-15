@@ -10,8 +10,8 @@ export function GlassPanel({ children, className, hover = false }: GlassPanelPro
   return (
     <div
       className={cn(
-        'bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl',
-        hover && 'hover:bg-white/10 hover:border-red-500/30 transition-all duration-300',
+        'bg-white/4 backdrop-blur-xl border border-white/8 rounded-xl',
+        hover && 'hover:bg-white/8 hover:border-red-500/20 transition-all duration-200',
         className
       )}
     >
