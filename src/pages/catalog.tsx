@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Header } from "@/widgets/header/ui/header";
-import { CategoryBar } from "@/widgets/category-bar/ui/category-bar";
+import { Sidebar } from "@/widgets/sidebar/ui/sidebar";
 import { Catalog } from "@/widgets/catalog/ui/catalog";
 import { Footer } from "@/widgets/footer/ui/footer";
 import { CartSidebar } from "@/widgets/cart-sidebar/ui/cart-sidebar";
@@ -128,24 +128,31 @@ export default function CatalogPage() {
           onMenuToggle={handleToggleMobileMenu}
           isMobileMenuOpen={isMobileMenuOpen}
           onCartToggle={handleToggleCartSidebar}
+          searchQuery={searchQuery}
+          onSearch={setSearchQuery}
         />
 
-        {/* Category Bar - Horizontal scrollable */}
-        <CategoryBar
-          categories={categories}
-          activeCategoryId={activeCategoryId}
-          activeSubcategoryId={activeSubcategoryId}
-          onSelectCategory={handleSelectCategory}
-        />
-
-        <main className="flex-1 max-w-[1920px] mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
-          <Catalog
-            products={filteredProducts}
-            searchQuery={searchQuery}
-            onSearch={setSearchQuery}
-            onAddToCart={handleAddToCart}
+        <div className="flex flex-1 max-w-[1920px] mx-auto w-full">
+          {/* Sidebar - Categories */}
+          <Sidebar
+            categories={categories}
+            activeCategoryId={activeCategoryId}
+            activeSubcategoryId={activeSubcategoryId}
+            onSelectCategory={handleSelectCategory}
+            isOpen={isMobileMenuOpen}
+            onClose={handleCloseMobileMenu}
           />
-        </main>
+
+          {/* Main Content */}
+          <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8">
+            <Catalog
+              products={filteredProducts}
+              searchQuery={searchQuery}
+              onSearch={setSearchQuery}
+              onAddToCart={handleAddToCart}
+            />
+          </main>
+        </div>
 
         <Footer />
         
