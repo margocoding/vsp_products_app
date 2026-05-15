@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowUpDown, ArrowUpAZ, ArrowDownAZ, SlidersHorizontal, ShoppingCart, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowUpDown, ArrowUpAZ, ArrowDownAZ, SlidersHorizontal, ShoppingCart, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { GlassPanel } from '@/shared/ui/glass-panel';
@@ -14,9 +14,12 @@ interface CatalogProps {
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc';
 
+const ITEMS_PER_PAGE = 20;
+
 export function Catalog({ products, onAddToCart }: CatalogProps) {
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [addedProducts, setAddedProducts] = useState<Set<number>>(new Set());
+  const [currentPage, setCurrentPage] = useState(1);
 
   const sortedProducts = useMemo(() => {
     const sorted = [...products];
@@ -32,6 +35,18 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
         return sorted;
     }
   }, [products, sortOption]);
+
+  // Pagination
+  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return sortedProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [sortedProducts, currentPage]);
+
+  // Reset to page 1 when sorting changes
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [sortOption]);
 
   const handleAddToCart = (product: Product) => {
     setAddedProducts(prev => new Set(prev).add(product.id));
@@ -60,6 +75,29 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
     { value: 'name-asc', label: 'А-Я', icon: <ArrowUpDown size={14} /> },
   ];
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | 'ellipsis')[] = [];
+    const delta = 2;
+    
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - delta && i <= currentPage + delta)
+      ) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== 'ellipsis') {
+        pages.push('ellipsis');
+      }
+    }
+    
+    return pages;
+  };
+
   return (
     <div className="flex-1 min-w-0">
       {/* Sorting Bar */}
@@ -71,7 +109,10 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
                 key={option.value}
                 variant={sortOption === option.value ? 'primary' : 'ghost'}
                 size="sm"
-                onClick={() => setSortOption(option.value)}
+                onClick={() => {
+                  setSortOption(option.value);
+                  setCurrentPage(1);
+                }}
                 className="gap-2"
               >
                 {option.icon}
@@ -88,28 +129,101 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
 
       {/* Products Table */}
       <div className="space-y-3">
-        {sortedProducts.map((product, index) => (
-          <motion.div
-            key={product.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.03 }}
-          >
-            <ProductRow
-              product={product}
-              isAdded={addedProducts.has(product.id)}
-              onAddToCart={() => handleAddToCart(product)}
-              formatPrice={formatPrice}
-            />
-          </motion.div>
-        ))}
+        <AnimatePresence mode="wait">
+          {paginatedProducts.map((product, index) => (
+            <motion.div
+              key={`${product.id}-${currentPage}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2, delay: index * 0.02 }}
+            >
+              <ProductRow
+                product={product}
+                isAdded={addedProducts.has(product.id)}
+                onAddToCart={() => handleAddToCart(product)}
+                formatPrice={formatPrice}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
         
-        {sortedProducts.length === 0 && (
+        {paginatedProducts.length === 0 && (
           <GlassPanel className="p-12 text-center">
             <p className="text-zinc-400 text-lg">Товары не найдены</p>
           </GlassPanel>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <GlassPanel className="mt-6 p-4">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="text-zinc-400 text-sm">
+              Страница <span className="text-zinc-200 font-medium">{currentPage}</span> из{' '}
+              <span className="text-zinc-200 font-medium">{totalPages}</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="glass"
+                size="sm"
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className="disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronsLeft size={16} />
+              </Button>
+              <Button
+                variant="glass"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft size={16} />
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {getPageNumbers().map((page, index) => (
+                  <Button
+                    key={index}
+                    variant={page === currentPage ? 'primary' : 'glass'}
+                    size="sm"
+                    onClick={() => typeof page === 'number' && handlePageChange(page)}
+                    className={cn(
+                      'min-w-[40px]',
+                      page === 'ellipsis' && 'cursor-default hover:bg-transparent hover:border-white/8'
+                    )}
+                    disabled={page === 'ellipsis'}
+                  >
+                    {page === 'ellipsis' ? '…' : page}
+                  </Button>
+                ))}
+              </div>
+              
+              <Button
+                variant="glass"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronRight size={16} />
+              </Button>
+              <Button
+                variant="glass"
+                size="sm"
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className="disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronsRight size={16} />
+              </Button>
+            </div>
+          </div>
+        </GlassPanel>
+      )}
     </div>
   );
 }

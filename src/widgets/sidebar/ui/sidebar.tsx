@@ -100,7 +100,7 @@ export function Sidebar({ categories, activeCategoryId, onSelectCategory }: Side
                 key={category.id}
                 category={category}
                 isActive={activeCategoryId === category.id || 
-                  category.children?.some(c => c.id === activeCategoryId)}
+                  !!category.children?.some(c => c.id === activeCategoryId)}
                 onSelect={onSelectCategory}
               />
             ))}

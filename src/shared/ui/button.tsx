@@ -13,12 +13,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           'inline-flex items-center justify-center font-medium transition-all duration-300 rounded-lg',
-          'focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:ring-offset-2 focus:ring-offset-transparent',
+          'focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:ring-offset-2 focus:ring-offset-transparent',
           {
-            primary: 'bg-gradient-to-r from-red-600 to-crimson hover:from-red-500 hover:to-red-400 text-white shadow-lg shadow-red-500/30 hover:shadow-red-500/50',
-            secondary: 'bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-100 border border-zinc-700/50',
-            ghost: 'hover:bg-red-500/10 text-zinc-300 hover:text-red-400',
-            glass: 'bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 text-zinc-100 hover:border-red-500/30 hover:shadow-lg hover:shadow-red-500/20'
+            primary: 'bg-gradient-to-r from-red-800/80 to-red-900/80 hover:from-red-700/70 hover:to-red-800/70 text-red-100 shadow-lg shadow-red-900/20 hover:shadow-red-800/30 border border-red-700/30',
+            secondary: 'bg-zinc-800/60 hover:bg-zinc-700/50 text-zinc-200 border border-zinc-700/40',
+            ghost: 'hover:bg-red-500/5 text-zinc-400 hover:text-red-300',
+            glass: 'bg-white/3 hover:bg-white/5 backdrop-blur-xl border border-white/8 text-zinc-200 hover:border-red-500/20 hover:shadow-lg hover:shadow-red-500/10'
           }[variant],
           {
             sm: 'px-3 py-1.5 text-sm',

@@ -10,9 +10,9 @@ export function AnimatedBackground({ children }: AnimatedBackgroundProps) {
       {/* Deep background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-black" />
       
-      {/* Large blur spheres - Red */}
+      {/* Large blur spheres - Soft Red */}
       <motion.div
-        className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-red-600/20 rounded-full blur-[120px]"
+        className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-red-800/15 rounded-full blur-[120px]"
         animate={{
           x: [0, 50, 0],
           y: [0, 30, 0],
@@ -25,9 +25,9 @@ export function AnimatedBackground({ children }: AnimatedBackgroundProps) {
         }}
       />
       
-      {/* Large blur spheres - Burgundy/Dark Red */}
+      {/* Large blur spheres - Soft Burgundy/Dark Red */}
       <motion.div
-        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#7f1d1d]/30 rounded-full blur-[100px]"
+        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#7f1d1d]/20 rounded-full blur-[100px]"
         animate={{
           x: [0, -40, 0],
           y: [0, -50, 0],
@@ -40,9 +40,9 @@ export function AnimatedBackground({ children }: AnimatedBackgroundProps) {
         }}
       />
       
-      {/* Purple/Violet sphere */}
+      {/* Purple/Violet sphere - Softer */}
       <motion.div
-        className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-purple-900/20 rounded-full blur-[80px]"
+        className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-purple-900/12 rounded-full blur-[80px]"
         animate={{
           x: [0, 30, 0],
           y: [0, -40, 0],
@@ -55,9 +55,9 @@ export function AnimatedBackground({ children }: AnimatedBackgroundProps) {
         }}
       />
       
-      {/* Additional crimson glow */}
+      {/* Additional crimson glow - Softer */}
       <motion.div
-        className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-crimson/15 rounded-full blur-[60px]"
+        className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-crimson/10 rounded-full blur-[60px]"
         animate={{
           x: [0, -20, 0],
           y: [0, 40, 0],
