@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Header } from "@/widgets/header/ui/header";
-import { Sidebar } from "@/widgets/sidebar/ui/sidebar";
+import { CategoryBar } from "@/widgets/category-bar/ui/category-bar";
 import { Catalog } from "@/widgets/catalog/ui/catalog";
 import { Footer } from "@/widgets/footer/ui/footer";
 import { CartSidebar } from "@/widgets/cart-sidebar/ui/cart-sidebar";
@@ -124,30 +124,27 @@ export default function CatalogPage() {
     <AnimatedBackground>
       <div className="min-h-screen flex flex-col">
         <Header
-          totalProducts={filteredProducts.length}
           cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-          onSearch={setSearchQuery}
           onMenuToggle={handleToggleMobileMenu}
           isMobileMenuOpen={isMobileMenuOpen}
           onCartToggle={handleToggleCartSidebar}
         />
 
-        <main className="flex-1 max-w-480 mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
-          <div className="flex gap-4 sm:gap-6">
-            <Sidebar
-              categories={categories}
-              activeCategoryId={activeCategoryId}
-              activeSubcategoryId={activeSubcategoryId}
-              onSelectCategory={handleSelectCategory}
-              isOpen={isMobileMenuOpen}
-              onClose={handleCloseMobileMenu}
-            />
+        {/* Category Bar - Horizontal scrollable */}
+        <CategoryBar
+          categories={categories}
+          activeCategoryId={activeCategoryId}
+          activeSubcategoryId={activeSubcategoryId}
+          onSelectCategory={handleSelectCategory}
+        />
 
-            <Catalog
-              products={filteredProducts}
-              onAddToCart={handleAddToCart}
-            />
-          </div>
+        <main className="flex-1 max-w-[1920px] mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
+          <Catalog
+            products={filteredProducts}
+            searchQuery={searchQuery}
+            onSearch={setSearchQuery}
+            onAddToCart={handleAddToCart}
+          />
         </main>
 
         <Footer />

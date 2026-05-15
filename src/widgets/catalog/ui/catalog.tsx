@@ -1,13 +1,16 @@
 import { useState, useMemo } from 'react';
-import { ArrowUpDown, ArrowUpAZ, ArrowDownAZ, SlidersHorizontal, ShoppingCart, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Star, Truck, Warehouse } from 'lucide-react';
+import { ArrowUpDown, ArrowUpAZ, ArrowDownAZ, SlidersHorizontal, ShoppingCart, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Star, Truck, Warehouse, Search, X } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { GlassPanel } from '@/shared/ui/glass-panel';
+import { Input } from '@/shared/ui/input';
 import { cn } from '@/shared/lib/cn';
 import type { Product } from '@/shared/types';
 
 interface CatalogProps {
   products: Product[];
+  searchQuery: string;
+  onSearch: (query: string) => void;
   onAddToCart: (product: Product) => void;
 }
 
@@ -15,7 +18,7 @@ type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc';
 
 const ITEMS_PER_PAGE = 12;
 
-export function Catalog({ products, onAddToCart }: CatalogProps) {
+export function Catalog({ products, searchQuery, onSearch, onAddToCart }: CatalogProps) {
   const [sortOption, setSortOption] = useState<SortOption>('default');
   const [addedProducts, setAddedProducts] = useState<Set<number>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
@@ -98,40 +101,63 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
   };
 
   return (
-    <div className="flex-1 min-w-0">
-      {/* Sorting Bar - Premium Style */}
+    <div className="w-full">
+      {/* Search and Sorting Bar - Premium Style */}
       <GlassPanel className="mb-6 p-4 sm:p-5 bg-gradient-to-r from-white/8 to-white/5 border-white/12 shadow-xl shadow-black/5">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            {sortOptions.map((option) => (
-              <Button
-                key={option.value}
-                variant={sortOption === option.value ? 'primary' : 'glass'}
-                size="sm"
-                onClick={() => {
-                  setSortOption(option.value);
-                  setCurrentPage(1);
-                }}
-                className={cn(
-                  "gap-2 text-xs sm:text-sm transition-all duration-300",
-                  sortOption === option.value && "shadow-lg shadow-red-900/20 scale-105"
-                )}
+        <div className="flex flex-col gap-4">
+          {/* Search bar */}
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Поиск по названию или описанию..."
+              value={searchQuery}
+              onChange={(e) => onSearch(e.target.value)}
+              icon={<Search size={18} />}
+              className="h-12 !rounded-xl !bg-white/8 !border-white/15 focus:!border-red-500/30 focus:!ring-red-500/30"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => onSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-zinc-300 transition-colors"
               >
-                {option.icon}
-                <span className="hidden xs:inline">{option.label}</span>
-              </Button>
-            ))}
+                <X size={16} />
+              </button>
+            )}
           </div>
-          
-          <div className="flex items-center gap-2 text-zinc-400 text-sm">
-            <Star size={16} className="text-red-400 fill-red-400/20" />
-            <span>Найдено <span className="text-red-400 font-bold text-base">{sortedProducts.length}</span> товаров</span>
+
+          {/* Sorting and count */}
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              {sortOptions.map((option) => (
+                <Button
+                  key={option.value}
+                  variant={sortOption === option.value ? 'primary' : 'glass'}
+                  size="sm"
+                  onClick={() => {
+                    setSortOption(option.value);
+                    setCurrentPage(1);
+                  }}
+                  className={cn(
+                    "gap-2 text-xs sm:text-sm transition-all duration-300 !rounded-lg",
+                    sortOption === option.value && "shadow-lg shadow-red-900/20 scale-105"
+                  )}
+                >
+                  {option.icon}
+                  <span className="hidden xs:inline">{option.label}</span>
+                </Button>
+              ))}
+            </div>
+            
+            <div className="flex items-center gap-2 text-zinc-400 text-sm">
+              <Star size={16} className="text-red-400 fill-red-400/20" />
+              <span>Найдено <span className="text-red-400 font-bold text-base">{sortedProducts.length}</span> товаров</span>
+            </div>
           </div>
         </div>
       </GlassPanel>
 
       {/* Products Grid - Card Layout */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
         {paginatedProducts.map((product) => (
           <ProductCard
             key={product.id}
@@ -248,7 +274,7 @@ function ProductCard({ product, isAdded, onAddToCart, formatPrice }: ProductCard
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\"%3E%3Crect fill=\"%231a1a1a\" width=\"400\" height=\"300\"/%3E%3Ctext fill=\"%23444\" x=\"50%25\" y=\"50%25\" text-anchor=\"middle\" dy=\".3em\" font-size=\"16\"%3ENo Image%3C/text%3E%3C/svg%3E';
+            (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22%3E%3Crect fill=%22%231a1a1a%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%23444%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2216%22%3ENo Image%3C/text%3E%3C/svg%3E';
           }}
         />
         
