@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ArrowUpDown, ArrowUpAZ, ArrowDownAZ, SlidersHorizontal, ShoppingCart, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ArrowUpDown, ArrowUpAZ, ArrowDownAZ, SlidersHorizontal, ShoppingCart, Check, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Star, Truck, Warehouse } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { GlassPanel } from '@/shared/ui/glass-panel';
@@ -13,7 +13,7 @@ interface CatalogProps {
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc';
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 12;
 
 export function Catalog({ products, onAddToCart }: CatalogProps) {
   const [sortOption, setSortOption] = useState<SortOption>('default');
@@ -99,20 +99,23 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
 
   return (
     <div className="flex-1 min-w-0">
-      {/* Sorting Bar */}
-      <GlassPanel className="mb-4 sm:mb-6 p-3 sm:p-4">
-        <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
+      {/* Sorting Bar - Premium Style */}
+      <GlassPanel className="mb-6 p-4 sm:p-5 bg-gradient-to-r from-white/8 to-white/5 border-white/12 shadow-xl shadow-black/5">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-2 flex-wrap">
             {sortOptions.map((option) => (
               <Button
                 key={option.value}
-                variant={sortOption === option.value ? 'primary' : 'ghost'}
+                variant={sortOption === option.value ? 'primary' : 'glass'}
                 size="sm"
                 onClick={() => {
                   setSortOption(option.value);
                   setCurrentPage(1);
                 }}
-                className="gap-1 sm:gap-2 text-xs sm:text-sm"
+                className={cn(
+                  "gap-2 text-xs sm:text-sm transition-all duration-300",
+                  sortOption === option.value && "shadow-lg shadow-red-900/20 scale-105"
+                )}
               >
                 {option.icon}
                 <span className="hidden xs:inline">{option.label}</span>
@@ -120,16 +123,17 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
             ))}
           </div>
           
-          <div className="text-zinc-400 text-xs sm:text-sm">
-            Найдено <span className="text-red-400 font-semibold">{sortedProducts.length}</span> товаров
+          <div className="flex items-center gap-2 text-zinc-400 text-sm">
+            <Star size={16} className="text-red-400 fill-red-400/20" />
+            <span>Найдено <span className="text-red-400 font-bold text-base">{sortedProducts.length}</span> товаров</span>
           </div>
         </div>
       </GlassPanel>
 
-      {/* Products Table */}
-      <div className="space-y-3">
+      {/* Products Grid - Card Layout */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {paginatedProducts.map((product) => (
-          <ProductRow
+          <ProductCard
             key={product.id}
             product={product}
             isAdded={addedProducts.has(product.id)}
@@ -139,8 +143,14 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
         ))}
         
         {paginatedProducts.length === 0 && (
-          <GlassPanel className="p-12 text-center">
-            <p className="text-zinc-400 text-lg">Товары не найдены</p>
+          <GlassPanel className="col-span-full p-16 text-center bg-white/3">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+                <ShoppingCart size={32} className="text-zinc-500" />
+              </div>
+              <p className="text-zinc-400 text-lg font-medium">Товары не найдены</p>
+              <p className="text-zinc-500 text-sm">Попробуйте изменить параметры поиска</p>
+            </div>
           </GlassPanel>
         )}
       </div>
@@ -218,89 +228,114 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
   );
 }
 
-interface ProductRowProps {
+interface ProductCardProps {
   product: Product;
   isAdded: boolean;
   onAddToCart: () => void;
   formatPrice: (price: number) => string;
 }
 
-function ProductRow({ product, isAdded, onAddToCart, formatPrice }: ProductRowProps) {
+function ProductCard({ product, isAdded, onAddToCart, formatPrice }: ProductCardProps) {
   return (
     <GlassPanel 
       hover
-      className="p-3 sm:p-4 group cursor-pointer"
+      className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-red-900/10 hover:-translate-y-1"
     >
-      <div className="flex items-center gap-3 sm:gap-4">
-        {/* Image */}
-        <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/3 border border-white/6">
-          <img
-            src={product.picture}
-            alt={product.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Crect fill="%23333" width="80" height="80"/%3E%3Ctext fill="%23666" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
-            }}
-          />
+      {/* Card Image Section */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-white/5 to-white/2">
+        <img
+          src={product.picture}
+          alt={product.name}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"300\"%3E%3Crect fill=\"%231a1a1a\" width=\"400\" height=\"300\"/%3E%3Ctext fill=\"%23444\" x=\"50%25\" y=\"50%25\" text-anchor=\"middle\" dy=\".3em\" font-size=\"16\"%3ENo Image%3C/text%3E%3C/svg%3E';
+          }}
+        />
+        
+        {/* Overlay gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+        
+        {/* Status badges overlay */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          {product.used ? (
+            <Badge variant="used" className="text-xs px-2 py-1 shadow-lg backdrop-blur-sm">Б/У</Badge>
+          ) : (
+            <Badge variant="new" className="text-xs px-2 py-1 shadow-lg backdrop-blur-sm">Новый</Badge>
+          )}
+          {product.delivery && (
+            <Badge variant="available" className="text-xs px-2 py-1 shadow-lg backdrop-blur-sm flex items-center gap-1">
+              <Truck size={10} /> Доставка
+            </Badge>
+          )}
+          {product.store && !product.delivery && (
+            <Badge variant="available" className="text-xs px-2 py-1 shadow-lg backdrop-blur-sm flex items-center gap-1">
+              <Warehouse size={10} /> Со склада
+            </Badge>
+          )}
+        </div>
+        
+        {/* Availability indicator */}
+        <div className="absolute top-3 right-3">
+          <div className={cn(
+            "px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm shadow-lg",
+            product.available 
+              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" 
+              : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+          )}>
+            {product.available ? 'В наличии' : 'Под заказ'}
+          </div>
+        </div>
+      </div>
+
+      {/* Card Content */}
+      <div className="p-4 space-y-3">
+        {/* Category badge */}
+        <div className="flex items-center justify-between">
+          <Badge variant="default" className="text-xs px-2 py-1 bg-white/5 border-white/10">
+            Категория #{product.categoryId}
+          </Badge>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2 sm:gap-4 flex-col sm:flex-row">
-            <div className="flex-1 min-w-0 w-full sm:w-auto">
-              <h3 className="text-sm sm:text-base text-zinc-200 font-medium line-clamp-2">
-                {product.name}
-              </h3>
-              
-              <div className="flex items-center gap-1.5 sm:gap-2 mt-2 flex-wrap">
-                <Badge variant="default" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Категория #{product.categoryId}</Badge>
-                {product.used && <Badge variant="used" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Б/У</Badge>}
-                {!product.used && <Badge variant="new" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Новый</Badge>}
-                {product.delivery && <Badge variant="available" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 hidden sm:inline-flex">Доставка</Badge>}
-                {product.store && <Badge variant="available" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 hidden sm:inline-flex">Со склада</Badge>}
-              </div>
-            </div>
+        {/* Product name */}
+        <h3 className="text-base font-semibold text-zinc-100 line-clamp-2 min-h-[2.5rem] group-hover:text-red-300 transition-colors duration-300">
+          {product.name}
+        </h3>
 
-            {/* Price and Action */}
-            <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end">
-              <div className="text-right">
-                <div className="text-base sm:text-xl font-bold text-zinc-200">
-                  {formatPrice(product.price)}
-                </div>
-                {product.available ? (
-                  <span className="text-[10px] sm:text-xs text-emerald-400">В наличии</span>
-                ) : (
-                  <span className="text-[10px] sm:text-xs text-amber-400">Под заказ</span>
-                )}
+        {/* Price and Action */}
+        <div className="pt-2 border-t border-white/8">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <div className="text-xl font-bold text-zinc-100 group-hover:text-red-300 transition-colors duration-300">
+                {formatPrice(product.price)}
               </div>
-              
-              <Button
-                variant={isAdded ? 'primary' : 'glass'}
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddToCart();
-                }}
-                className={cn(
-                  'min-w-[100px] sm:min-w-[120px] text-xs sm:text-sm',
-                  isAdded && 'bg-emerald-700/60 hover:bg-emerald-700/50'
-                )}
-              >
-                {isAdded ? (
-                  <>
-                    <Check size={14} className="sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Добавлено</span>
-                    <span className="sm:hidden">✓</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart size={14} className="sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">В заявку</span>
-                    <span className="sm:hidden">+</span>
-                  </>
-                )}
-              </Button>
             </div>
+            
+            <Button
+              variant={isAdded ? 'primary' : 'glass'}
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddToCart();
+              }}
+              className={cn(
+                'min-w-[110px] transition-all duration-300',
+                isAdded 
+                  ? 'bg-emerald-700/60 hover:bg-emerald-600/50 shadow-lg shadow-emerald-900/20' 
+                  : 'hover:shadow-lg hover:shadow-red-900/20'
+              )}
+            >
+              {isAdded ? (
+                <>
+                  <Check size={16} className="mr-1.5" />
+                  <span>Добавлено</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart size={16} className="mr-1.5" />
+                  <span>В заявку</span>
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </div>
