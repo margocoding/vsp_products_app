@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import type { Category } from "@/shared/types";
 
@@ -111,6 +111,8 @@ interface SidebarProps {
   activeCategoryId: number | null;
   activeSubcategoryId: number | null;
   onSelectCategory: (categoryId: number | null) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 export function Sidebar({
@@ -118,30 +120,61 @@ export function Sidebar({
   activeCategoryId,
   activeSubcategoryId,
   onSelectCategory,
+  isOpen,
+  onClose,
 }: SidebarProps) {
   return (
-    <aside className="w-72 shrink-0">
-      <div className="sticky top-24">
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-          <h2 className="text-lg font-semibold text-zinc-100 mb-4 px-2">
-            Категории
-          </h2>
+    <>
+      {/* Mobile overlay */}
+      <div 
+        className={cn(
+          "fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300",
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
+        onClick={onClose}
+      />
+      
+      {/* Sidebar */}
+      <aside className={cn(
+        "w-72 shrink-0 lg:block",
+        "fixed lg:static top-0 left-0 h-full lg:h-auto z-50 lg:z-auto",
+        "transform transition-transform duration-300 lg:transform-none",
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
+        <div className="sticky top-24 lg:top-24">
+          <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4 lg:m-0">
+            {/* Mobile close button */}
+            <div className="flex items-center justify-between mb-4 lg:hidden">
+              <h2 className="text-lg font-semibold text-zinc-100 px-2">Категории</h2>
+              <button
+                onClick={onClose}
+                className="p-2 text-zinc-400 hover:text-zinc-200 transition-colors"
+                aria-label="Закрыть меню"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <h2 className="text-lg font-semibold text-zinc-100 mb-4 px-2 hidden lg:block">
+              Категории
+            </h2>
 
-          <nav className="space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-            {categories.map((category) => (
-              <CategoryItem
-                key={category.id}
-                category={category}
-                isActive={
-                  activeCategoryId === category.id && !activeSubcategoryId
-                }
-                activeSubcategoryId={activeSubcategoryId}
-                onSelect={onSelectCategory}
-              />
-            ))}
-          </nav>
+            <nav className="space-y-1 max-h-[calc(100vh-200px)] lg:max-h-[calc(100vh-200px)] overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+              {categories.map((category) => (
+                <CategoryItem
+                  key={category.id}
+                  category={category}
+                  isActive={
+                    activeCategoryId === category.id && !activeSubcategoryId
+                  }
+                  activeSubcategoryId={activeSubcategoryId}
+                  onSelect={onSelectCategory}
+                />
+              ))}
+            </nav>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

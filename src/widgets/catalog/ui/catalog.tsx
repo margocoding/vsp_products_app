@@ -100,8 +100,8 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
   return (
     <div className="flex-1 min-w-0">
       {/* Sorting Bar */}
-      <GlassPanel className="mb-6 p-4">
-        <div className="flex items-center justify-between flex-wrap gap-4">
+      <GlassPanel className="mb-4 sm:mb-6 p-3 sm:p-4">
+        <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
           <div className="flex items-center gap-2 flex-wrap">
             {sortOptions.map((option) => (
               <Button
@@ -112,15 +112,15 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
                   setSortOption(option.value);
                   setCurrentPage(1);
                 }}
-                className="gap-2"
+                className="gap-1 sm:gap-2 text-xs sm:text-sm"
               >
                 {option.icon}
-                {option.label}
+                <span className="hidden xs:inline">{option.label}</span>
               </Button>
             ))}
           </div>
           
-          <div className="text-zinc-400 text-sm">
+          <div className="text-zinc-400 text-xs sm:text-sm">
             Найдено <span className="text-red-400 font-semibold">{sortedProducts.length}</span> товаров
           </div>
         </div>
@@ -147,31 +147,31 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <GlassPanel className="mt-6 p-4">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="text-zinc-400 text-sm">
+        <GlassPanel className="mt-4 sm:mt-6 p-3 sm:p-4">
+          <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
+            <div className="text-zinc-400 text-xs sm:text-sm">
               Страница <span className="text-zinc-200 font-medium">{currentPage}</span> из{' '}
               <span className="text-zinc-200 font-medium">{totalPages}</span>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto pb-2 sm:pb-0">
               <Button
                 variant="glass"
                 size="sm"
                 onClick={() => handlePageChange(1)}
                 disabled={currentPage === 1}
-                className="disabled:opacity-30 disabled:cursor-not-allowed"
+                className="disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
               >
-                <ChevronsLeft size={16} />
+                <ChevronsLeft size={14} className="sm:w-4 sm:h-4" />
               </Button>
               <Button
                 variant="glass"
                 size="sm"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="disabled:opacity-30 disabled:cursor-not-allowed"
+                className="disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
               >
-                <ChevronLeft size={16} />
+                <ChevronLeft size={14} className="sm:w-4 sm:h-4" />
               </Button>
               
               <div className="flex items-center gap-1">
@@ -182,7 +182,7 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
                     size="sm"
                     onClick={() => typeof page === 'number' && handlePageChange(page)}
                     className={cn(
-                      'min-w-[40px]',
+                      'min-w-[32px] sm:min-w-[40px] px-2 sm:px-3 text-xs sm:text-sm',
                       page === 'ellipsis' && 'cursor-default hover:bg-transparent hover:border-white/8'
                     )}
                     disabled={page === 'ellipsis'}
@@ -197,18 +197,18 @@ export function Catalog({ products, onAddToCart }: CatalogProps) {
                 size="sm"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="disabled:opacity-30 disabled:cursor-not-allowed"
+                className="disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
               >
-                <ChevronRight size={16} />
+                <ChevronRight size={14} className="sm:w-4 sm:h-4" />
               </Button>
               <Button
                 variant="glass"
                 size="sm"
                 onClick={() => handlePageChange(totalPages)}
                 disabled={currentPage === totalPages}
-                className="disabled:opacity-30 disabled:cursor-not-allowed"
+                className="disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
               >
-                <ChevronsRight size={16} />
+                <ChevronsRight size={14} className="sm:w-4 sm:h-4" />
               </Button>
             </div>
           </div>
@@ -229,11 +229,11 @@ function ProductRow({ product, isAdded, onAddToCart, formatPrice }: ProductRowPr
   return (
     <GlassPanel 
       hover
-      className="p-4 group cursor-pointer"
+      className="p-3 sm:p-4 group cursor-pointer"
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         {/* Image */}
-        <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/3 border border-white/6">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 rounded-lg overflow-hidden bg-white/3 border border-white/6">
           <img
             src={product.picture}
             alt={product.name}
@@ -246,55 +246,57 @@ function ProductRow({ product, isAdded, onAddToCart, formatPrice }: ProductRowPr
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <h3 className="text-zinc-200 font-medium line-clamp-2">
+          <div className="flex items-start justify-between gap-2 sm:gap-4 flex-col sm:flex-row">
+            <div className="flex-1 min-w-0 w-full sm:w-auto">
+              <h3 className="text-sm sm:text-base text-zinc-200 font-medium line-clamp-2">
                 {product.name}
               </h3>
               
-              <div className="flex items-center gap-2 mt-2">
-                <Badge variant="default">Категория #{product.categoryId}</Badge>
-                {product.used && <Badge variant="used">Б/У</Badge>}
-                {!product.used && <Badge variant="new">Новый</Badge>}
-                {product.delivery && <Badge variant="available">Доставка</Badge>}
-                {product.store && <Badge variant="available">Со склада</Badge>}
+              <div className="flex items-center gap-1.5 sm:gap-2 mt-2 flex-wrap">
+                <Badge variant="default" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Категория #{product.categoryId}</Badge>
+                {product.used && <Badge variant="used" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Б/У</Badge>}
+                {!product.used && <Badge variant="new" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5">Новый</Badge>}
+                {product.delivery && <Badge variant="available" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 hidden sm:inline-flex">Доставка</Badge>}
+                {product.store && <Badge variant="available" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 hidden sm:inline-flex">Со склада</Badge>}
               </div>
             </div>
 
             {/* Price and Action */}
-            <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 w-full sm:w-auto justify-between sm:justify-end">
               <div className="text-right">
-                <div className="text-xl font-bold text-zinc-200">
+                <div className="text-base sm:text-xl font-bold text-zinc-200">
                   {formatPrice(product.price)}
                 </div>
                 {product.available ? (
-                  <span className="text-xs text-emerald-400">В наличии</span>
+                  <span className="text-[10px] sm:text-xs text-emerald-400">В наличии</span>
                 ) : (
-                  <span className="text-xs text-amber-400">Под заказ</span>
+                  <span className="text-[10px] sm:text-xs text-amber-400">Под заказ</span>
                 )}
               </div>
               
               <Button
                 variant={isAdded ? 'primary' : 'glass'}
-                size="md"
+                size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   onAddToCart();
                 }}
                 className={cn(
-                  'min-w-[120px]',
+                  'min-w-[100px] sm:min-w-[120px] text-xs sm:text-sm',
                   isAdded && 'bg-emerald-700/60 hover:bg-emerald-700/50'
                 )}
               >
                 {isAdded ? (
                   <>
-                    <Check size={16} className="mr-2" />
-                    Добавлено
+                    <Check size={14} className="sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Добавлено</span>
+                    <span className="sm:hidden">✓</span>
                   </>
                 ) : (
                   <>
-                    <ShoppingCart size={16} className="mr-2" />
-                    В заявку
+                    <ShoppingCart size={14} className="sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">В заявку</span>
+                    <span className="sm:hidden">+</span>
                   </>
                 )}
               </Button>
