@@ -21,6 +21,19 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const hasChildren = category.children && category.children.length > 0;
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (hasChildren) {
+      setIsExpanded(!isExpanded);
+    } else {
+      onSelect(category.id);
+    }
+  };
+
+  const handleSubcategorySelect = (categoryId: number) => {
+    onSelect(categoryId);
+  };
+
   return (
     <div>
       <div
@@ -39,12 +52,7 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
             : 'hover:bg-white/5 hover:border-white/10 border border-transparent'
 >>>>>>> 6786a03a7f582d8a14448cbc4b14e6015f445665
         )}
-        onClick={() => {
-          if (hasChildren) {
-            setIsExpanded(!isExpanded);
-          }
-          onSelect(category.id);
-        }}
+        onClick={handleClick}
       >
         {hasChildren ? (
           <div
@@ -107,7 +115,7 @@ function CategoryItem({ category, isActive, onSelect }: CategoryItemProps) {
               key={child.id}
               category={child}
               isActive={isActive}
-              onSelect={onSelect}
+              onSelect={handleSubcategorySelect}
             />
           ))}
         </div>
