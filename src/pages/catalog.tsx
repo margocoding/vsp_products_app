@@ -10,14 +10,20 @@ import type { Product } from '@/shared/types';
 
 export default function CatalogPage() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
+  const [activeSubcategoryId, setActiveSubcategoryId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [cartItems, setCartItems] = useState<Product[]>([]);
 
   // Filter products by category and search query
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      // Category filter
-      if (activeCategoryId !== null && product.categoryId !== activeCategoryId) {
+      // Subcategory filter (takes priority)
+      if (activeSubcategoryId !== null && product.categoryId !== activeSubcategoryId) {
+        return false;
+      }
+      
+      // Category filter (only if no subcategory is selected)
+      if (activeCategoryId !== null && !activeSubcategoryId && product.categoryId !== activeCategoryId) {
         return false;
       }
 
@@ -32,10 +38,27 @@ export default function CatalogPage() {
 
       return true;
     });
-  }, [activeCategoryId, searchQuery]);
+  }, [activeCategoryId, activeSubcategoryId, searchQuery]);
 
   const handleAddToCart = (product: Product) => {
     setCartItems((prev) => [...prev, product]);
+  };
+
+  const handleSelectCategory = (categoryId: number | null) => {
+    setActiveCategoryId(categoryId);
+    // Check if this is a subcategory (by checking if it exists as a child in any category)
+    const isSubcategory = categories.some(cat => 
+      cat.children?.some(child => child.id === categoryId)
+    );
+    
+    if (isSubcategory) {
+      setActiveSubcategoryId(categoryId);
+      setActiveCategoryId(null); // Clear parent category selection
+    } else if (categoryId === null) {
+      setActiveSubcategoryId(null);
+    } else {
+      setActiveSubcategoryId(null); // Clear subcategory when selecting parent
+    }
   };
 
   return (
@@ -52,7 +75,8 @@ export default function CatalogPage() {
             <Sidebar
               categories={categories}
               activeCategoryId={activeCategoryId}
-              onSelectCategory={setActiveCategoryId}
+              activeSubcategoryId={activeSubcategoryId}
+              onSelectCategory={handleSelectCategory}
             />
 
             <Catalog
