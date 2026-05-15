@@ -1,29 +1,38 @@
-import { useState, useMemo } from 'react';
-import { Header } from '@/widgets/header/ui/header';
-import { Sidebar } from '@/widgets/sidebar/ui/sidebar';
-import { Catalog } from '@/widgets/catalog/ui/catalog';
-import { Footer } from '@/widgets/footer/ui/footer';
-import { AnimatedBackground } from '@/shared/ui/animated-background';
-import { categories } from '@/shared/data/categories';
-import { products } from '@/shared/data/products';
-import type { Product } from '@/shared/types';
+import { useState, useMemo } from "react";
+import { Header } from "@/widgets/header/ui/header";
+import { Sidebar } from "@/widgets/sidebar/ui/sidebar";
+import { Catalog } from "@/widgets/catalog/ui/catalog";
+import { Footer } from "@/widgets/footer/ui/footer";
+import { AnimatedBackground } from "@/shared/ui/animated-background";
+import { categories } from "@/shared/data/categories";
+import { products } from "@/shared/data/products";
+import type { Product } from "@/shared/types";
 
 export default function CatalogPage() {
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
-  const [activeSubcategoryId, setActiveSubcategoryId] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeSubcategoryId, setActiveSubcategoryId] = useState<number | null>(
+    null,
+  );
+  const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState<Product[]>([]);
 
   // Filter products by category and search query
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
       // Subcategory filter (takes priority)
-      if (activeSubcategoryId !== null && product.categoryId !== activeSubcategoryId) {
+      if (
+        activeSubcategoryId !== null &&
+        product.categoryId !== activeSubcategoryId
+      ) {
         return false;
       }
-      
+
       // Category filter (only if no subcategory is selected)
-      if (activeCategoryId !== null && !activeSubcategoryId && product.categoryId !== activeCategoryId) {
+      if (
+        activeCategoryId !== null &&
+        !activeSubcategoryId &&
+        product.categoryId !== activeCategoryId
+      ) {
         return false;
       }
 
@@ -45,12 +54,12 @@ export default function CatalogPage() {
   };
 
   const handleSelectCategory = (categoryId: number | null) => {
-    setActiveCategoryId(categoryId);
+    setActiveCategoryId((prev) => (prev === categoryId ? null : categoryId));
     // Check if this is a subcategory (by checking if it exists as a child in any category)
-    const isSubcategory = categories.some(cat => 
-      cat.children?.some(child => child.id === categoryId)
+    const isSubcategory = categories.some((cat) =>
+      cat.children?.some((child) => child.id === categoryId),
     );
-    
+
     if (isSubcategory) {
       setActiveSubcategoryId(categoryId);
       setActiveCategoryId(null); // Clear parent category selection
@@ -70,7 +79,7 @@ export default function CatalogPage() {
           onSearch={setSearchQuery}
         />
 
-        <main className="flex-1 max-w-[1920px] mx-auto w-full px-6 py-8">
+        <main className="flex-1 max-w-480 mx-auto w-full px-6 py-8">
           <div className="flex gap-6">
             <Sidebar
               categories={categories}
