@@ -1,1 +1,14 @@
-(src/index.css)
+```
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+
+# Environment variables
+.env.local
+
+# Editor/IDE
+.vscode/
+
+```
