@@ -1,13 +1,19 @@
-```gitignore
+```
 # Dependencies
 node_modules/
 
 # Build outputs
 dist/
 build/
+*.bundle.js
+*.min.js
 *.css.map
 
-# Environment
+# Logs and temp files
+*.log
+*.tmp
+
+# Environment variables
 .env
 .env.local
 *.env.*
@@ -18,28 +24,19 @@ build/
 *.swp
 *.swo
 
-# Logs
-*.log
-
-# Temp files
-*.tmp
+# OS generated files
+.DS_Store
+Thumbs.db
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Compiled files
-*.o
-*.obj
+.Python
 *.so
-*.a
-*.dll
-*.exe
-*.out
 
-# Coverage
+# Coverage reports
 coverage/
 htmlcov/
 .coverage
@@ -48,7 +45,38 @@ htmlcov/
 .pytest_cache/
 .mypy_cache/
 
-# OS
-.DS_Store
-Thumbs.db
+# Distribution / packaging
+*.egg-info/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
 ```

@@ -1,6 +1,7 @@
-import { ShoppingCart, Phone, Menu, X, Search } from "lucide-react";
+import { ShoppingCart, Phone, Menu, X, Search, Globe } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
+import { GlassPanel } from "@/shared/ui/glass-panel";
 import { cn } from "@/shared/lib/cn";
 
 interface HeaderProps {
@@ -22,32 +23,35 @@ export function Header({
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50">
-      <div className="bg-zinc-950/95 backdrop-blur-xl border-b border-white/8 shadow-xl shadow-black/30">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 py-2.5 sm:py-3">
+      <GlassPanel 
+        variant="navbar" 
+        className="rounded-none border-t-0 border-l-0 border-r-0"
+      >
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-4">
             {/* Left side - Logo and Mobile Menu */}
             <div className="flex items-center gap-3 min-w-[200px]">
               {/* Mobile Menu Button */}
               <button
                 onClick={onMenuToggle}
-                className="lg:hidden p-2 -ml-2 text-zinc-400 hover:text-white transition-colors duration-200"
+                className="lg:hidden p-2 -ml-2 text-[#9CA3AF] hover:text-[#FF2B2B] transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,43,43,0.3)] rounded-lg"
                 aria-label="Меню"
               >
                 {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
 
               {/* Logo */}
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-red-700 flex items-center justify-center shadow-lg flex-shrink-0">
-                  <span className="text-white font-bold text-base sm:text-lg">
-                    Л
-                  </span>
+              <div className="flex items-center gap-2.5 group cursor-pointer">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-[#FF2B2B] to-[#D1001F] flex items-center justify-center shadow-lg shadow-[rgba(255,43,43,0.4)] group-hover:shadow-xl group-hover:shadow-[rgba(255,43,43,0.6)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden">
+                  {/* Animated shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <span className="text-white font-bold text-lg sm:text-xl relative z-10">Л</span>
                 </div>
                 <div className="min-w-0 hidden sm:block">
-                  <h1 className="text-sm font-bold text-white tracking-tight">
+                  <h1 className="text-sm font-bold text-[#F5F5F5] tracking-wider uppercase neon-text group-hover:text-[#FF2B2B] transition-colors duration-300">
                     ООО «ЛСК-НН»
                   </h1>
-                  <p className="text-xs text-zinc-500 truncate">
+                  <p className="text-[10px] text-[#9CA3AF] uppercase tracking-widest truncate">
                     ЖД материалы ВСП
                   </p>
                 </div>
@@ -56,19 +60,20 @@ export function Header({
 
             {/* Center - Search */}
             <div className="flex-1 max-w-xl hidden md:block">
-              <div className="relative">
+              <div className="relative group">
                 <Input
                   type="text"
                   placeholder="Поиск товаров..."
                   value={searchQuery}
                   onChange={(e) => onSearch(e.target.value)}
                   icon={<Search size={16} />}
-                  className="h-9 !rounded-lg !bg-zinc-900/50 !border-zinc-800 focus:!border-red-900/50 focus:!ring-red-900/30 text-sm"
+                  variant="neon"
+                  className="h-10 !rounded-xl text-sm"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => onSearch("")}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 hover:text-zinc-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#6B7280] hover:text-[#FF2B2B] transition-all duration-200 hover:scale-110"
                   >
                     <X size={14} />
                   </button>
@@ -76,39 +81,70 @@ export function Header({
               </div>
             </div>
 
-            {/* Right side - Phone and Cart */}
+            {/* Right side - Phone, Language and Cart */}
             <div className="flex items-center gap-3">
               {/* Phone - Desktop only */}
               <a
                 href="tel:+79995448055"
-                className="hidden lg:flex items-center gap-2 text-zinc-400 hover:text-white transition-colors duration-200"
+                className="hidden lg:flex items-center gap-2 text-[#9CA3AF] hover:text-[#FF2B2B] transition-all duration-300 group"
               >
-                <Phone size={16} className="text-red-500" />
+                <div className="p-2 rounded-lg bg-[rgba(255,43,43,0.1)] group-hover:bg-[rgba(255,43,43,0.2)] transition-all duration-300">
+                  <Phone size={16} className="text-[#FF2B2B]" />
+                </div>
                 <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-white">
+                  <span className="font-semibold text-sm text-[#F5F5F5] group-hover:text-[#FF2B2B] transition-colors duration-300">
                     +7 999 544 80 55
                   </span>
                 </div>
               </a>
 
+              {/* Language switcher */}
+              <button className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,43,43,0.1)] border border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,43,43,0.3)] transition-all duration-300">
+                <Globe size={14} className="text-[#9CA3AF]" />
+                <span className="text-xs text-[#F5F5F5]">RU</span>
+              </button>
+
               <Button
                 variant="primary"
                 size="sm"
-                className="relative shrink-0 cursor-pointer !rounded-lg !px-4 !py-2 shadow-lg shadow-red-900/20 hover:shadow-red-900/30 transition-all duration-200 hover:scale-105"
+                className="relative shrink-0 cursor-pointer !rounded-xl !px-4 !py-2.5 shadow-lg shadow-[rgba(255,43,43,0.3)] hover:shadow-xl hover:shadow-[rgba(255,43,43,0.5)] transition-all duration-300 hover:scale-105 group"
                 onClick={onCartToggle}
               >
                 <ShoppingCart size={16} className="sm:mr-1.5" />
-                <span className="hidden sm:inline font-semibold">Заявка</span>
+                <span className="hidden sm:inline font-semibold uppercase tracking-wide">Заявка</span>
                 {cartCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 flex items-center justify-center text-xs font-bold bg-red-600 text-white rounded-full shadow-lg shadow-red-900/30">
+                  <span className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center text-xs font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] text-white rounded-full shadow-lg shadow-[rgba(255,43,43,0.5)] animate-pulse">
                     {cartCount}
                   </span>
                 )}
               </Button>
             </div>
           </div>
+          
+          {/* Mobile search bar */}
+          <div className="mt-3 md:hidden">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Поиск товаров..."
+                value={searchQuery}
+                onChange={(e) => onSearch(e.target.value)}
+                icon={<Search size={16} />}
+                variant="neon"
+                className="h-10 !rounded-xl text-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => onSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#6B7280] hover:text-[#FF2B2B] transition-all duration-200"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      </GlassPanel>
     </header>
   );
 }
