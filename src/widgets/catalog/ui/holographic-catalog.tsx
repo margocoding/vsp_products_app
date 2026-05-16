@@ -154,47 +154,8 @@ export function HolographicCatalog({
         )}
       </div>
 
-      {/* Navigation arrows - Simplified */}
-      <div className="absolute left-[-60px] top-1/2 -translate-y-1/2 z-50 hidden xl:flex flex-col gap-3">
-        <button
-          onClick={handlePrev}
-          disabled={currentPage === 0 || isTransitioning}
-          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={20} className="text-[#F5F5F5]" />
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={currentPage >= totalPages - 1 || isTransitioning}
-          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Next page"
-        >
-          <ChevronRight size={20} className="text-[#F5F5F5]" />
-        </button>
-      </div>
-
-      <div className="absolute right-[-60px] top-1/2 -translate-y-1/2 z-50 hidden xl:flex flex-col gap-3">
-        <button
-          onClick={handleNext}
-          disabled={currentPage >= totalPages - 1 || isTransitioning}
-          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Next page"
-        >
-          <ChevronRight size={20} className="text-[#F5F5F5]" />
-        </button>
-        <button
-          onClick={handlePrev}
-          disabled={currentPage === 0 || isTransitioning}
-          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={20} className="text-[#F5F5F5]" />
-        </button>
-      </div>
-
       {/* Mobile/Tablet navigation */}
-      <div className="flex xl:hidden items-center justify-center gap-4 mt-6">
+      <div className="flex items-center justify-center gap-4 mt-6">
         <button
           onClick={handlePrev}
           disabled={currentPage === 0 || isTransitioning}
