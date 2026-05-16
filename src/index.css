@@ -1,21 +1,172 @@
 @import "tailwindcss";
 
 :root {
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  /* Core colors - Deep black & graphite base */
+  --color-black-deep: #050505;
+  --color-graphite: #0F1115;
+  --color-dark-gray: #16181D;
+  
+  /* Red neon palette */
+  --color-red-neon: #FF2B2B;
+  --color-red-glow: #8A0000;
+  --color-crimson: #D1001F;
+  --color-red-dark: #5a0000;
+  
+  /* Text colors */
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #6B7280;
+  
+  /* Glass & borders */
+  --glass-bg: rgba(15, 15, 18, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-red: rgba(255, 43, 43, 0.3);
+  
+  /* Glow effects */
+  --glow-red-soft: rgba(255, 43, 43, 0.15);
+  --glow-red-medium: rgba(255, 43, 43, 0.25);
+  --glow-red-intense: rgba(255, 43, 43, 0.4);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-graphite);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-crimson), var(--color-red-glow));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--color-red-neon), var(--color-crimson));
+}
+
+* {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-crimson) var(--color-graphite);
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: #09090b;
+  background: var(--color-black-deep);
+  color: var(--color-text-primary);
+  font-family: 'Rajdhani', 'Orbitron', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: 0.02em;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
+/* Futuristic typography defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0;
 }
+
+/* Selection color */
+::selection {
+  background: var(--color-red-neon);
+  color: var(--color-black-deep);
+}
+
+/* Focus outline */
+:focus-visible {
+  outline: 2px solid var(--color-red-neon);
+  outline-offset: 2px;
+}
+
+/* Animated gradient border utility */
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: rgba(255, 43, 43, 0.3);
+    box-shadow: 0 0 10px rgba(255, 43, 43, 0.1), inset 0 0 20px rgba(255, 43, 43, 0.05);
+  }
+  50% {
+    border-color: rgba(255, 43, 43, 0.6);
+    box-shadow: 0 0 20px rgba(255, 43, 43, 0.2), inset 0 0 30px rgba(255, 43, 43, 0.1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(400%) skewX(-15deg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Utility classes */
+.neon-text {
+  text-shadow: 0 0 10px rgba(255, 43, 43, 0.5), 0 0 20px rgba(255, 43, 43, 0.3);
+}
+
+.neon-border {
+  border: 1px solid rgba(255, 43, 43, 0.3);
+  box-shadow: 0 0 10px rgba(255, 43, 43, 0.1), inset 0 0 20px rgba(255, 43, 43, 0.05);
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(15, 15, 18, 0.7);
+  border-color: rgba(255, 43, 43, 0.4);
+  box-shadow: 0 0 30px rgba(255, 43, 43, 0.15), inset 0 0 40px rgba(255, 43, 43, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
