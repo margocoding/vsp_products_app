@@ -1,8 +1,8 @@
-import { cn } from "@/shared/lib/cn";
+import { useState } from "react";
+import { Layers, TrendingUp, X, ChevronDown } from "lucide-react";
 import type { Category } from "@/shared/types";
 import { GlassPanel } from "@/shared/ui/glass-panel";
-import { Layers, TrendingUp, X, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { cn } from "@/shared/lib/cn";
 
 interface CategoryItemProps {
   category: Category;
@@ -44,7 +44,6 @@ function CategoryItem({
 
   return (
     <div className="space-y-1">
-      {/* Parent Category */}
       <div
         onClick={handleClick}
         className={cn(
@@ -57,7 +56,6 @@ function CategoryItem({
             : "border-transparent",
         )}
       >
-        {/* Left Accent */}
         <div
           className={cn(
             "absolute left-0 top-2 bottom-2 w-[2px] rounded-full transition-all duration-300",
@@ -67,7 +65,6 @@ function CategoryItem({
           )}
         />
 
-        {/* Content */}
         <div className="flex items-center gap-2.5 relative z-10">
           <span
             className={cn(
@@ -79,7 +76,6 @@ function CategoryItem({
           </span>
         </div>
 
-        {/* Expand Icon */}
         {hasChildren && (
           <ChevronDown
             size={14}
@@ -94,10 +90,8 @@ function CategoryItem({
         )}
       </div>
 
-      {/* Children */}
       {hasChildren && isExpanded && (
         <div className="relative ml-3 pl-4 space-y-1">
-          {/* Vertical Line */}
           <div className="absolute left-0 top-1 bottom-1 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
           {category.children!.map((child) => {
@@ -116,7 +110,6 @@ function CategoryItem({
                     : "border-transparent",
                 )}
               >
-                {/* Dot */}
                 <div
                   className={cn(
                     "h-1.5 w-1.5 rounded-full transition-all duration-200",
@@ -126,7 +119,6 @@ function CategoryItem({
                   )}
                 />
 
-                {/* Text */}
                 <span
                   className={cn(
                     "text-[11px] font-medium uppercase tracking-[0.14em] transition-colors duration-200",
@@ -165,7 +157,6 @@ export function Sidebar({
 }: SidebarProps) {
   return (
     <>
-      {/* Mobile Overlay */}
       <div
         className={cn(
           "fixed inset-0 z-40 bg-black/70 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
@@ -174,7 +165,6 @@ export function Sidebar({
         onClick={onClose}
       />
 
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed left-0 top-0 z-50 h-full w-64 shrink-0 transition-transform duration-300 xl:w-72",
@@ -187,7 +177,6 @@ export function Sidebar({
           className="h-full rounded-none border-b-0 border-r border-r-white/[0.05] border-t-0"
         >
           <div className="sticky top-[73px] flex h-[calc(100vh-73px)] flex-col">
-            {/* Mobile Header */}
             <div className="flex items-center justify-between border-b border-white/[0.05] p-4 lg:hidden">
               <div className="flex items-center gap-2">
                 <Layers size={15} className="text-[#FF2B2B]" />
@@ -206,7 +195,6 @@ export function Sidebar({
               </button>
             </div>
 
-            {/* Desktop Header */}
             <div className="hidden border-b border-white/[0.05] p-5 lg:block">
               <div className="flex items-center gap-2">
                 <Layers size={14} className="text-[#FF2B2B]" />
@@ -223,7 +211,6 @@ export function Sidebar({
               </div>
             </div>
 
-            {/* Categories */}
             <nav className="flex-1 space-y-1 overflow-y-auto p-3 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
               {categories.map((category) => (
                 <CategoryItem
