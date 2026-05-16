@@ -92,9 +92,9 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
         "transition-all duration-300 ease-out",
         isTransitioning && "opacity-0 blur-sm"
       )}>
-        {/* Upper section: Hero + Secondary grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_0.9fr] gap-8 mb-8">
-          {/* Hero Product Card */}
+        {/* Upper section: Hero + Secondary grid - Compact cinematic dashboard layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-[1.15fr_0.95fr] gap-6 mb-6">
+          {/* Hero Product Card - Compact */}
           {heroProduct && (
             <HeroCard 
               product={heroProduct}
@@ -105,8 +105,8 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
             />
           )}
 
-          {/* Secondary Products Grid - More compact */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Secondary Products Grid - Compact cluster */}
+          <div className="grid grid-cols-2 gap-2.5">
             {secondaryProducts.map((product, index) => (
               <SecondaryCard
                 key={product.id}
@@ -114,7 +114,7 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
                 isAdded={addedProducts.has(product.id)}
                 onAddToCart={() => handleAddToCart(product)}
                 formatPrice={formatPrice}
-                delay={index * 100}
+                delay={index * 80}
               />
             ))}
           </div>
@@ -238,30 +238,20 @@ interface HeroCardProps {
 
 function HeroCard({ product, isAdded, onAddToCart, formatPrice, transitionDirection }: HeroCardProps) {
   return (
-    <div 
-      className="holo-card holo-card-hero relative group"
-      style={{
-        animation: 'holoSlideIn 0.5s ease-out forwards',
-        transformOrigin: transitionDirection === 'right' ? 'left center' : 'right center'
-      }}
-    >
-      {/* Corner decorations */}
-      <div className="absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-[rgba(255,43,43,0.4)] rounded-tl-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="absolute bottom-0 right-0 w-12 h-12 border-r-2 border-b-2 border-[rgba(255,43,43,0.4)] rounded-br-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-[rgba(255,43,43,0.2)] rounded-tr-lg" />
-      <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-[rgba(255,43,43,0.2)] rounded-bl-lg" />
-
-      {/* HUD lines */}
-      <div className="absolute top-4 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,43,43,0.3)] to-transparent opacity-50" />
-      <div className="absolute bottom-4 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-[rgba(255,43,43,0.3)] to-transparent opacity-50" />
-
-      <div className="relative z-10 p-6 h-full flex flex-col">
-        {/* Image section */}
-        <div className="relative flex-1 mb-6 overflow-hidden rounded-lg bg-[rgba(10,10,13,0.6)]">
+      <div 
+        className="holo-card holo-card-hero relative group"
+        style={{
+          animation: 'holoSlideIn 0.5s ease-out forwards',
+          transformOrigin: transitionDirection === 'right' ? 'left center' : 'right center'
+        }}
+      >
+      <div className="relative z-10 p-5 h-full flex flex-col">
+        {/* Image section - Compact cinematic preview */}
+        <div className="relative h-[52%] mb-4 overflow-hidden rounded-lg bg-[rgba(10,10,13,0.6)]">
           <img
             src={product.picture}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%230a0a0d%22 width=%22400%22 height=%22400%22/%3E%3Ctext fill=%22%23333%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2216%22%3ENo Image%3C/text%3E%3C/svg%3E';
             }}
@@ -271,7 +261,7 @@ function HeroCard({ product, isAdded, onAddToCart, formatPrice, transitionDirect
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,10,13,0.9)] via-[rgba(10,10,13,0.3)] to-transparent" />
           
           {/* Status badges */}
-          <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
             {product.used ? (
               <Badge variant="used" size="sm" className="backdrop-blur-md shadow-lg shadow-[rgba(255,43,43,0.2)]">Б/У</Badge>
             ) : (
@@ -279,20 +269,20 @@ function HeroCard({ product, isAdded, onAddToCart, formatPrice, transitionDirect
             )}
             {product.delivery && (
               <Badge variant="available" size="sm" className="backdrop-blur-md shadow-lg shadow-[rgba(255,43,43,0.2)] flex items-center gap-1">
-                <Truck size={12} /> Доставка
+                <Truck size={10} /> Доставка
               </Badge>
             )}
             {product.store && !product.delivery && (
               <Badge variant="available" size="sm" className="backdrop-blur-md shadow-lg shadow-[rgba(255,43,43,0.2)] flex items-center gap-1">
-                <Warehouse size={12} /> Со склада
+                <Warehouse size={10} /> Со склада
               </Badge>
             )}
           </div>
 
           {/* Availability indicator */}
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-3 right-3">
             <div className={cn(
-              "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide backdrop-blur-md shadow-lg border",
+              "px-2.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide backdrop-blur-md shadow-lg border",
               product.available 
                 ? "bg-[rgba(16,185,129,0.2)] text-[#34D399] border-[rgba(16,185,129,0.4)] shadow-[0_0_20px_rgba(16,185,129,0.3)]" 
                 : "bg-[rgba(245,158,11,0.2)] text-[#FBBF24] border-[rgba(245,158,11,0.4)] shadow-[0_0_20px_rgba(245,158,11,0.3)]"
@@ -302,50 +292,50 @@ function HeroCard({ product, isAdded, onAddToCart, formatPrice, transitionDirect
           </div>
 
           {/* Feature icons */}
-          <div className="absolute bottom-4 left-4 flex items-center gap-2">
+          <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
             {product.available && (
-              <div className="p-2 rounded-lg bg-[rgba(255,43,43,0.2)] backdrop-blur-sm border border-[rgba(255,43,43,0.4)] shadow-[0_0_15px_rgba(255,43,43,0.3)]">
-                <Zap size={14} className="text-[#FF2B2B]" />
+              <div className="p-1.5 rounded-lg bg-[rgba(255,43,43,0.2)] backdrop-blur-sm border border-[rgba(255,43,43,0.4)] shadow-[0_0_15px_rgba(255,43,43,0.3)]">
+                <Zap size={12} className="text-[#FF2B2B]" />
               </div>
             )}
             {!product.used && (
-              <div className="p-2 rounded-lg bg-[rgba(255,43,43,0.2)] backdrop-blur-sm border border-[rgba(255,43,43,0.4)] shadow-[0_0_15px_rgba(255,43,43,0.3)]">
-                <Award size={14} className="text-[#FF2B2B]" />
+              <div className="p-1.5 rounded-lg bg-[rgba(255,43,43,0.2)] backdrop-blur-sm border border-[rgba(255,43,43,0.4)] shadow-[0_0_15px_rgba(255,43,43,0.3)]">
+                <Award size={12} className="text-[#FF2B2B]" />
               </div>
             )}
-            <div className="p-2 rounded-lg bg-[rgba(255,43,43,0.2)] backdrop-blur-sm border border-[rgba(255,43,43,0.4)] shadow-[0_0_15px_rgba(255,43,43,0.3)]">
-              <Shield size={14} className="text-[#FF2B2B]" />
+            <div className="p-1.5 rounded-lg bg-[rgba(255,43,43,0.2)] backdrop-blur-sm border border-[rgba(255,43,43,0.4)] shadow-[0_0_15px_rgba(255,43,43,0.3)]">
+              <Shield size={12} className="text-[#FF2B2B]" />
             </div>
           </div>
         </div>
 
-        {/* Content section */}
-        <div className="space-y-4">
+        {/* Content section - Compact */}
+        <div className="space-y-3 flex-1">
           <div>
-            <h2 className="text-xl font-bold text-[#F5F5F5] uppercase tracking-wider mb-2 neon-text group-hover:text-[#FF2B2B] transition-colors duration-300">
+            <h2 className="text-lg font-bold text-[#F5F5F5] uppercase tracking-wider mb-1.5 neon-text group-hover:text-[#FF2B2B] transition-colors duration-300">
               {product.name}
             </h2>
-            <p className="text-[#9CA3AF] text-sm line-clamp-2">{product.description}</p>
+            <p className="text-[#9CA3AF] text-xs line-clamp-2">{product.description}</p>
           </div>
 
           {/* Price and CTA */}
-          <div className="flex items-end justify-between pt-4 border-t border-[rgba(255,43,43,0.2)]">
+          <div className="flex items-end justify-between pt-3 border-t border-[rgba(255,43,43,0.2)]">
             <div>
-              <div className="text-xs text-[#9CA3AF] uppercase tracking-wider mb-1">Цена</div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-[#FF2B2B] via-[#D1001F] to-[#FF2B2B] bg-clip-text text-transparent neon-text-intense">
+              <div className="text-[10px] text-[#9CA3AF] uppercase tracking-wider mb-0.5">Цена</div>
+              <div className="text-xl font-bold bg-gradient-to-r from-[#FF2B2B] via-[#D1001F] to-[#FF2B2B] bg-clip-text text-transparent neon-text-intense">
                 {formatPrice(product.price)}
               </div>
             </div>
             
             <Button
               variant={isAdded ? 'primary' : 'outline'}
-              size="lg"
+              size="md"
               onClick={(e) => {
                 e.stopPropagation();
                 onAddToCart();
               }}
               className={cn(
-                'min-w-[140px] transition-all duration-300 !rounded-lg !px-6 !py-3 text-sm font-semibold uppercase tracking-wide',
+                'min-w-[120px] transition-all duration-300 !rounded-lg !px-5 !py-2.5 text-xs font-semibold uppercase tracking-wide',
                 isAdded 
                   ? '!bg-gradient-to-r from-[#10B981] to-[#059669] shadow-lg shadow-[rgba(16,185,129,0.4)]' 
                   : 'hover:shadow-lg hover:shadow-[rgba(255,43,43,0.4)] hover:border-[rgba(255,43,43,0.5)]'
@@ -353,12 +343,12 @@ function HeroCard({ product, isAdded, onAddToCart, formatPrice, transitionDirect
             >
               {isAdded ? (
                 <>
-                  <Check size={16} className="mr-2" />
+                  <Check size={14} className="mr-1.5" />
                   <span>Добавлено</span>
                 </>
               ) : (
                 <>
-                  <ShoppingCart size={16} className="mr-2" />
+                  <ShoppingCart size={14} className="mr-1.5" />
                   <span>В заявку</span>
                 </>
               )}
@@ -389,17 +379,13 @@ function SecondaryCard({ product, isAdded, onAddToCart, formatPrice, delay }: Se
         opacity: 0
       }}
     >
-      {/* Corner accents */}
-      <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-[rgba(255,43,43,0.3)] rounded-tl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-[rgba(255,43,43,0.3)] rounded-br opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-      <div className="relative p-3">
-        {/* Image */}
+      <div className="relative p-2.5">
+        {/* Image - Compact */}
         <div className="relative aspect-square mb-2 overflow-hidden rounded-md bg-[rgba(10,10,13,0.5)]">
           <img
             src={product.picture}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             onError={(e) => {
               (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%230a0a0d%22 width=%22400%22 height=%22400%22/%3E%3Ctext fill=%22%23333%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2216%22%3ENo Image%3C/text%3E%3C/svg%3E';
             }}
@@ -424,8 +410,8 @@ function SecondaryCard({ product, isAdded, onAddToCart, formatPrice, delay }: Se
           </div>
         </div>
 
-        {/* Info */}
-        <div className="space-y-1.5">
+        {/* Info - Compact */}
+        <div className="space-y-1">
           <h3 className="text-[11px] font-bold text-[#F5F5F5] uppercase tracking-wide line-clamp-2 min-h-[2rem] group-hover:text-[#FF2B2B] transition-colors duration-300">
             {product.name}
           </h3>
@@ -469,89 +455,77 @@ function ShowcaseCard({ products, formatPrice }: ShowcaseCardProps) {
 
   return (
     <GlassPanel variant="accent" className="relative overflow-hidden group">
-      {/* Blueprint grid overlay - subtle */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(255, 43, 43, 0.3) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 43, 43, 0.3) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px'
-        }}
-      />
-
-      <div className="relative z-10 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-[rgba(255,43,43,0.2)]">
-          <div className="flex items-center gap-3">
-            <Star size={20} className="text-[#FF2B2B] neon-text" />
-            <h3 className="text-lg font-bold text-[#F5F5F5] uppercase tracking-wider neon-text">
+      <div className="relative z-10 p-5">
+        {/* Header - Compact technical */}
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-[rgba(255,43,43,0.2)]">
+          <div className="flex items-center gap-2">
+            <Star size={16} className="text-[#FF2B2B] neon-text" />
+            <h3 className="text-sm font-bold text-[#F5F5F5] uppercase tracking-wider neon-text">
               Превью подборки
             </h3>
           </div>
           
-          <div className="flex items-center gap-4 text-xs text-[#9CA3AF]">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#FF2B2B] shadow-[0_0_8px_rgba(255,43,43,0.6)] animate-pulse" />
+          <div className="flex items-center gap-3 text-[10px] text-[#9CA3AF]">
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#FF2B2B] shadow-[0_0_6px_rgba(255,43,43,0.6)] animate-pulse" />
               <span>Активная подборка</span>
             </div>
           </div>
         </div>
 
-        {/* Content grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Content grid - Compact */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {/* Stats */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 rounded-lg bg-[rgba(10,10,13,0.5)] border border-[rgba(255,43,43,0.15)]">
-              <span className="text-xs text-[#9CA3AF] uppercase">Товаров</span>
-              <span className="text-lg font-bold text-[#F5F5F5] neon-text">{products.length}</span>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-2.5 rounded-lg bg-[rgba(10,10,13,0.5)] border border-[rgba(255,43,43,0.15)]">
+              <span className="text-[10px] text-[#9CA3AF] uppercase">Товаров</span>
+              <span className="text-base font-bold text-[#F5F5F5] neon-text">{products.length}</span>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-[rgba(10,10,13,0.5)] border border-[rgba(255,43,43,0.15)]">
-              <span className="text-xs text-[#9CA3AF] uppercase">Средняя цена</span>
-              <span className="text-lg font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] bg-clip-text text-transparent neon-text">
+            <div className="flex items-center justify-between p-2.5 rounded-lg bg-[rgba(10,10,13,0.5)] border border-[rgba(255,43,43,0.15)]">
+              <span className="text-[10px] text-[#9CA3AF] uppercase">Средняя цена</span>
+              <span className="text-base font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] bg-clip-text text-transparent neon-text">
                 {formatPrice(avgPrice)}
               </span>
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg bg-[rgba(10,10,13,0.5)] border border-[rgba(255,43,43,0.15)]">
-              <span className="text-xs text-[#9CA3AF] uppercase">Общая стоимость</span>
-              <span className="text-lg font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] bg-clip-text text-transparent neon-text">
+            <div className="flex items-center justify-between p-2.5 rounded-lg bg-[rgba(10,10,13,0.5)] border border-[rgba(255,43,43,0.15)]">
+              <span className="text-[10px] text-[#9CA3AF] uppercase">Общая стоимость</span>
+              <span className="text-base font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] bg-clip-text text-transparent neon-text">
                 {formatPrice(totalValue)}
               </span>
             </div>
           </div>
 
-          {/* Product thumbnails */}
-          <div className="md:col-span-2 flex items-center gap-3 overflow-x-auto pb-2">
+          {/* Product thumbnails - Compact */}
+          <div className="md:col-span-2 flex items-center gap-2 overflow-x-auto pb-1.5">
             {products.map((product, index) => (
               <div 
                 key={product.id}
-                className="flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden border border-[rgba(255,43,43,0.2)] bg-[rgba(10,10,13,0.6)] relative group/item cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.4)] hover:shadow-[0_0_20px_rgba(255,43,43,0.2)]"
+                className="flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border border-[rgba(255,43,43,0.2)] bg-[rgba(10,10,13,0.6)] relative group/item cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.4)] hover:shadow-[0_0_15px_rgba(255,43,43,0.15)]"
               >
                 <img
                   src={product.picture}
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(255,43,43,0.2)] to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(255,43,43,0.15)] to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-[rgba(10,10,13,0.9)] to-transparent">
-                  <div className="text-[10px] text-[#FF2B2B] font-bold truncate">{formatPrice(product.price)}</div>
+                  <div className="text-[9px] text-[#FF2B2B] font-bold truncate">{formatPrice(product.price)}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* HUD footer */}
-        <div className="mt-6 pt-4 border-t border-[rgba(255,43,43,0.2)] flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
+        {/* Technical footer - Minimal */}
+        <div className="mt-4 pt-3 border-t border-[rgba(255,43,43,0.2)] flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-[10px] text-[#9CA3AF]">
             <div className="flex items-center gap-1">
               <div className="w-1 h-1 rounded-full bg-[#FF2B2B]" />
-              <span>Holographic Preview System</span>
+              <span>Holographic Preview</span>
             </div>
           </div>
-          <div className="text-xs text-[#9CA3AF]">
-            ID: <span className="text-[#F5F5F5] font-mono">{Date.now().toString(36).toUpperCase()}</span>
+          <div className="text-[10px] text-[#9CA3AF] font-mono">
+            ID: {Date.now().toString(36).toUpperCase()}
           </div>
         </div>
       </div>
