@@ -1,8 +1,7 @@
-import { ShoppingCart, Phone, Menu, X, Search, Globe } from "lucide-react";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
 import { GlassPanel } from "@/shared/ui/glass-panel";
-import { cn } from "@/shared/lib/cn";
+import { Input } from "@/shared/ui/input";
+import { Menu, Phone, Search, ShoppingCart, X } from "lucide-react";
 
 interface HeaderProps {
   cartCount: number;
@@ -23,8 +22,8 @@ export function Header({
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50">
-      <GlassPanel 
-        variant="navbar" 
+      <GlassPanel
+        variant="navbar"
         className="rounded-none border-t-0 border-l-0 border-r-0"
       >
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 py-3 sm:py-4">
@@ -45,7 +44,9 @@ export function Header({
                 <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-[#FF2B2B] to-[#D1001F] flex items-center justify-center shadow-lg shadow-[rgba(255,43,43,0.4)] group-hover:shadow-xl group-hover:shadow-[rgba(255,43,43,0.6)] transition-all duration-300 group-hover:scale-105 relative overflow-hidden">
                   {/* Animated shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <span className="text-white font-bold text-lg sm:text-xl relative z-10">Л</span>
+                  <span className="text-white font-bold text-lg sm:text-xl relative z-10">
+                    Л
+                  </span>
                 </div>
                 <div className="min-w-0 hidden sm:block">
                   <h1 className="text-sm font-bold text-[#F5F5F5] tracking-wider uppercase neon-text group-hover:text-[#FF2B2B] transition-colors duration-300">
@@ -98,29 +99,25 @@ export function Header({
                 </div>
               </a>
 
-              {/* Language switcher */}
-              <button className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,43,43,0.1)] border border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,43,43,0.3)] transition-all duration-300">
-                <Globe size={14} className="text-[#9CA3AF]" />
-                <span className="text-xs text-[#F5F5F5]">RU</span>
-              </button>
-
               <Button
                 variant="primary"
                 size="sm"
-                className="relative shrink-0 cursor-pointer !rounded-xl !px-4 !py-2.5 shadow-lg shadow-[rgba(255,43,43,0.3)] hover:shadow-xl hover:shadow-[rgba(255,43,43,0.5)] transition-all duration-300 hover:scale-105 group"
+                className="relative shrink-0 cursor-pointer !rounded-xl !px-4 !py-2.5 shadow-lg shadow-[rgba(255,43,43,0.3)] hover:shadow-xl hover:shadow-[rgba(255,43,43,0.5)] transition-all duration-300 hover:scale-105 group flex items-center"
                 onClick={onCartToggle}
               >
                 <ShoppingCart size={16} className="sm:mr-1.5" />
-                <span className="hidden sm:inline font-semibold uppercase tracking-wide">Заявка</span>
+                <span className="hidden sm:inline font-semibold uppercase tracking-wide">
+                  Заявка
+                </span>
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center text-xs font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] text-white rounded-full shadow-lg shadow-[rgba(255,43,43,0.5)] animate-pulse">
+                  <span className="min-w-[22px] h-[22px] px-1 flex items-center justify-center bg-white text-[#FF2B2B] text-xs font-bold rounded-full border border-red-200 shadow-lg">
                     {cartCount}
                   </span>
                 )}
               </Button>
             </div>
           </div>
-          
+
           {/* Mobile search bar */}
           <div className="mt-3 md:hidden">
             <div className="relative">

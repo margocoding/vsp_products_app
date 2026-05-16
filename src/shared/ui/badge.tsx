@@ -27,12 +27,17 @@ export function Badge({
         {
           default:
             "bg-[rgba(255,255,255,0.05)] text-[#9CA3AF] border border-[rgba(255,255,255,0.1)]",
-          used: "bg-[rgba(245,158,11,0.15)] text-[#FBBF24] border border-[rgba(245,158,11,0.3)] shadow-[0_0_10px_rgba(245,158,11,0.1)]",
-          new: "bg-[rgba(16,185,129,0.25)] text-[#34D399] border border-[rgba(16,185,129,0.3)] shadow-[0_0_10px_rgba(16,185,129,0.1)]",
+
+          used: "bg-[rgba(245,158,11,0.12)] text-[#FCD34D] border border-[rgba(245,158,11,0.25)] shadow-[0_0_10px_rgba(245,158,11,0.12)]",
+
+          new: "bg-[rgba(16,185,129,0.14)] text-[#6EE7B7] border border-[rgba(16,185,129,0.25)] shadow-[0_0_10px_rgba(16,185,129,0.12)]",
+
           available:
-            "bg-[rgba(255,43,43,0.15)] text-[#FF2B2B] border border-[rgba(255,43,43,0.3)] shadow-[0_0_10px_rgba(255,43,43,0.15)]",
-          neon: "bg-transparent text-[#FF2B2B] border border-[#FF2B2B] shadow-[0_0_15px_rgba(255,43,43,0.3)]",
-          glow: "bg-[rgba(255,43,43,0.2)] text-[#FF2B2B] border border-[rgba(255,43,43,0.4)] shadow-[0_0_20px_rgba(255,43,43,0.4)]",
+            "bg-[rgba(255,43,43,0.12)] text-[#FFE2E2] border border-[rgba(255,43,43,0.25)] shadow-[0_0_10px_rgba(255,43,43,0.12)]",
+
+          neon: "bg-[rgba(255,43,43,0.08)] text-white border border-[#FF2B2B] shadow-[0_0_14px_rgba(255,43,43,0.25)]",
+
+          glow: "bg-[linear-gradient(135deg,rgba(255,43,43,0.18),rgba(255,80,80,0.08))] text-white border border-[rgba(255,43,43,0.3)] shadow-[0_0_18px_rgba(255,43,43,0.22)]",
         }[variant],
         sizes[size],
         className,
