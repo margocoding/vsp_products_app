@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
 
 :root {
   /* Core colors - Deep black & graphite base */
@@ -444,6 +444,15 @@ h1, h2, h3, h4, h5, h6 {
 .holo-card-hero {
   grid-column: span 1;
   min-height: 500px;
+}
+
+/* Secondary card - more compact */
+.holo-card-secondary {
+  min-height: auto;
+}
+
+.holo-card-secondary:hover {
+  transform: translateY(-4px) scale(1.01) perspective(1000px) rotateX(1deg);
 }
 
 /* Navigation button holographic */

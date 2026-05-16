@@ -1,14 +1,1 @@
-```
-# Dependencies
-node_modules/
-
-# Build artifacts
-dist/
-
-# Environment variables
-.env.local
-
-# Editor/IDE
-.vscode/
-
-```
+Nothing should be ignored since the changes only include source files (.css, .tsx) without any build artifacts, dependencies, or temporary files.

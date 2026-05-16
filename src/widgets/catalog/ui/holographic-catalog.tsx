@@ -148,7 +148,7 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
         isTransitioning && "opacity-0 blur-sm"
       )}>
         {/* Upper section: Hero + Secondary grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_0.9fr] gap-8 mb-8">
           {/* Hero Product Card */}
           {heroProduct && (
             <HeroCard 
@@ -160,8 +160,8 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
             />
           )}
 
-          {/* Secondary Products Grid */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Secondary Products Grid - More compact */}
+          <div className="grid grid-cols-2 gap-3">
             {secondaryProducts.map((product, index) => (
               <SecondaryCard
                 key={product.id}
@@ -410,7 +410,7 @@ interface SecondaryCardProps {
 function SecondaryCard({ product, isAdded, onAddToCart, formatPrice, delay }: SecondaryCardProps) {
   return (
     <div 
-      className="holo-card group cursor-pointer"
+      className="holo-card holo-card-secondary group cursor-pointer"
       style={{
         animation: 'cascadeIn 0.5s ease-out forwards',
         animationDelay: `${delay}ms`,
@@ -418,12 +418,12 @@ function SecondaryCard({ product, isAdded, onAddToCart, formatPrice, delay }: Se
       }}
     >
       {/* Corner accents */}
-      <div className="absolute top-0 left-0 w-6 h-6 border-l border-t border-[rgba(255,43,43,0.3)] rounded-tl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      <div className="absolute bottom-0 right-0 w-6 h-6 border-r border-b border-[rgba(255,43,43,0.3)] rounded-br opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-[rgba(255,43,43,0.3)] rounded-tl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-[rgba(255,43,43,0.3)] rounded-br opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div className="relative p-4">
+      <div className="relative p-3">
         {/* Image */}
-        <div className="relative aspect-square mb-3 overflow-hidden rounded-lg bg-[rgba(10,10,13,0.5)]">
+        <div className="relative aspect-square mb-2 overflow-hidden rounded-md bg-[rgba(10,10,13,0.5)]">
           <img
             src={product.picture}
             alt={product.name}
@@ -435,31 +435,31 @@ function SecondaryCard({ product, isAdded, onAddToCart, formatPrice, delay }: Se
           <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,10,13,0.7)] to-transparent" />
           
           {/* Badge */}
-          <div className="absolute top-2 left-2">
+          <div className="absolute top-1.5 left-1.5">
             {product.used ? (
-              <Badge variant="used" size="sm" className="backdrop-blur-md text-[10px]">Б/У</Badge>
+              <Badge variant="used" size="sm" className="backdrop-blur-md text-[9px] px-1.5 py-0.5">Б/У</Badge>
             ) : (
-              <Badge variant="new" size="sm" className="backdrop-blur-md text-[10px]">Новый</Badge>
+              <Badge variant="new" size="sm" className="backdrop-blur-md text-[9px] px-1.5 py-0.5">Новый</Badge>
             )}
           </div>
 
           {/* Availability */}
-          <div className="absolute top-2 right-2">
+          <div className="absolute top-1.5 right-1.5">
             <div className={cn(
-              "w-2 h-2 rounded-full",
-              product.available ? "bg-[#34D399] shadow-[0_0_8px_rgba(52,211,153,0.6)]" : "bg-[#FBBF24] shadow-[0_0_8px_rgba(251,191,36,0.6)]"
+              "w-1.5 h-1.5 rounded-full",
+              product.available ? "bg-[#34D399] shadow-[0_0_6px_rgba(52,211,153,0.6)]" : "bg-[#FBBF24] shadow-[0_0_6px_rgba(251,191,36,0.6)]"
             )} />
           </div>
         </div>
 
         {/* Info */}
-        <div className="space-y-2">
-          <h3 className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wide line-clamp-2 min-h-[2rem] group-hover:text-[#FF2B2B] transition-colors duration-300">
+        <div className="space-y-1.5">
+          <h3 className="text-[11px] font-bold text-[#F5F5F5] uppercase tracking-wide line-clamp-2 min-h-[2rem] group-hover:text-[#FF2B2B] transition-colors duration-300">
             {product.name}
           </h3>
           
-          <div className="flex items-center justify-between pt-2 border-t border-[rgba(255,43,43,0.15)]">
-            <div className="text-sm font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] bg-clip-text text-transparent neon-text">
+          <div className="flex items-center justify-between pt-1.5 border-t border-[rgba(255,43,43,0.15)]">
+            <div className="text-xs font-bold bg-gradient-to-r from-[#FF2B2B] to-[#D1001F] bg-clip-text text-transparent neon-text">
               {formatPrice(product.price)}
             </div>
             
@@ -469,14 +469,14 @@ function SecondaryCard({ product, isAdded, onAddToCart, formatPrice, delay }: Se
                 onAddToCart();
               }}
               className={cn(
-                "p-2 rounded-lg transition-all duration-300 border",
+                "p-1.5 rounded-md transition-all duration-300 border",
                 isAdded 
-                  ? "bg-[rgba(16,185,129,0.2)] border-[rgba(16,185,129,0.4)] text-[#34D399] shadow-[0_0_10px_rgba(16,185,129,0.3)]" 
-                  : "bg-[rgba(255,43,43,0.1)] border-[rgba(255,43,43,0.3)] text-[#FF2B2B] hover:bg-[rgba(255,43,43,0.2)] hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_15px_rgba(255,43,43,0.3)]"
+                  ? "bg-[rgba(16,185,129,0.2)] border-[rgba(16,185,129,0.4)] text-[#34D399] shadow-[0_0_8px_rgba(16,185,129,0.3)]" 
+                  : "bg-[rgba(255,43,43,0.1)] border-[rgba(255,43,43,0.3)] text-[#FF2B2B] hover:bg-[rgba(255,43,43,0.2)] hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_12px_rgba(255,43,43,0.3)]"
               )}
               aria-label="Add to cart"
             >
-              {isAdded ? <Check size={14} /> : <ShoppingCart size={14} />}
+              {isAdded ? <Check size={12} /> : <ShoppingCart size={12} />}
             </button>
           </div>
         </div>
