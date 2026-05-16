@@ -1,54 +1,42 @@
-```gitignore
+```
 # Dependencies
 node_modules/
 
 # Build outputs
 dist/
 build/
-*.css.map
+coverage/
+htmlcov/
 
-# Environment
+# Environment variables
 .env
 .env.local
-*.env.*
+.env.*
 
-# Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
-*.log
-
-# Temp files
-*.tmp
-
-# Python
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Compiled files
-*.o
-*.obj
-*.so
-*.a
-*.dll
-*.exe
-*.out
+# Logs
+*.log
 
-# Coverage
-coverage/
-htmlcov/
-.coverage
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Testing
-.pytest_cache/
-.mypy_cache/
-
-# OS
+# OS generated
 .DS_Store
 Thumbs.db
+
+# Testing
+.nyc_output/
+coverage/
+.coverage
+
+# TypeScript/JavaScript
+*.tsbuildinfo
 ```
