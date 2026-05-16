@@ -87,61 +87,6 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
 
   return (
     <div className="w-full relative">
-      {/* Floating red spheres behind catalog */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute top-[10%] left-[5%] w-[400px] h-[400px] bg-[#FF2B2B]/10 rounded-full blur-[100px]"
-          style={{ animation: 'sphereFloat 8s ease-in-out infinite' }}
-        />
-        <div 
-          className="absolute bottom-[20%] right-[10%] w-[350px] h-[350px] bg-[#D1001F]/8 rounded-full blur-[90px]"
-          style={{ animation: 'sphereFloat 10s ease-in-out infinite', animationDelay: '2s' }}
-        />
-        <div 
-          className="absolute top-[50%] left-[50%] w-[300px] h-[300px] bg-[#8A0000]/10 rounded-full blur-[80px]"
-          style={{ animation: 'sphereFloat 12s ease-in-out infinite', animationDelay: '4s' }}
-        />
-      </div>
-
-      {/* Navigation arrows */}
-      <div className="absolute left-[-70px] top-1/2 -translate-y-1/2 z-50 hidden xl:flex flex-col gap-3">
-        <button
-          onClick={handlePrev}
-          disabled={currentPage === 0 || isTransitioning}
-          className="nav-button-holo disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={currentPage >= totalPages - 1 || isTransitioning}
-          className="nav-button-holo disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Next page"
-        >
-          <ChevronRight size={24} />
-        </button>
-      </div>
-
-      <div className="absolute right-[-70px] top-1/2 -translate-y-1/2 z-50 hidden xl:flex flex-col gap-3">
-        <button
-          onClick={handleNext}
-          disabled={currentPage >= totalPages - 1 || isTransitioning}
-          className="nav-button-holo disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Next page"
-        >
-          <ChevronRight size={24} />
-        </button>
-        <button
-          onClick={handlePrev}
-          disabled={currentPage === 0 || isTransitioning}
-          className="nav-button-holo disabled:opacity-30 disabled:cursor-not-allowed"
-          aria-label="Previous page"
-        >
-          <ChevronLeft size={24} />
-        </button>
-      </div>
-
       {/* Main catalog grid */}
       <div className={cn(
         "transition-all duration-300 ease-out",
@@ -184,15 +129,54 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
         )}
       </div>
 
+      {/* Navigation arrows - Simplified */}
+      <div className="absolute left-[-60px] top-1/2 -translate-y-1/2 z-50 hidden xl:flex flex-col gap-3">
+        <button
+          onClick={handlePrev}
+          disabled={currentPage === 0 || isTransitioning}
+          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Previous page"
+        >
+          <ChevronLeft size={20} className="text-[#F5F5F5]" />
+        </button>
+        <button
+          onClick={handleNext}
+          disabled={currentPage >= totalPages - 1 || isTransitioning}
+          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Next page"
+        >
+          <ChevronRight size={20} className="text-[#F5F5F5]" />
+        </button>
+      </div>
+
+      <div className="absolute right-[-60px] top-1/2 -translate-y-1/2 z-50 hidden xl:flex flex-col gap-3">
+        <button
+          onClick={handleNext}
+          disabled={currentPage >= totalPages - 1 || isTransitioning}
+          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Next page"
+        >
+          <ChevronRight size={20} className="text-[#F5F5F5]" />
+        </button>
+        <button
+          onClick={handlePrev}
+          disabled={currentPage === 0 || isTransitioning}
+          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
+          aria-label="Previous page"
+        >
+          <ChevronLeft size={20} className="text-[#F5F5F5]" />
+        </button>
+      </div>
+
       {/* Mobile/Tablet navigation */}
       <div className="flex xl:hidden items-center justify-center gap-4 mt-6">
         <button
           onClick={handlePrev}
           disabled={currentPage === 0 || isTransitioning}
-          className="nav-button-holo disabled:opacity-30 disabled:cursor-not-allowed !w-12 !h-12"
+          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label="Previous page"
         >
-          <ChevronLeft size={20} />
+          <ChevronLeft size={20} className="text-[#F5F5F5]" />
         </button>
         
         <div className="flex items-center gap-2">
@@ -227,10 +211,10 @@ export function HolographicCatalog({ products, onAddToCart }: HolographicCatalog
         <button
           onClick={handleNext}
           disabled={currentPage >= totalPages - 1 || isTransitioning}
-          className="nav-button-holo disabled:opacity-30 disabled:cursor-not-allowed !w-12 !h-12"
+          className="w-10 h-10 rounded-full bg-[rgba(10,10,12,0.6)] backdrop-blur-md border border-[rgba(255,43,43,0.2)] flex items-center justify-center cursor-pointer transition-all duration-300 hover:border-[rgba(255,43,43,0.5)] hover:shadow-[0_0_20px_rgba(255,43,43,0.3)] disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label="Next page"
         >
-          <ChevronRight size={20} />
+          <ChevronRight size={20} className="text-[#F5F5F5]" />
         </button>
       </div>
 
@@ -261,18 +245,6 @@ function HeroCard({ product, isAdded, onAddToCart, formatPrice, transitionDirect
         transformOrigin: transitionDirection === 'right' ? 'left center' : 'right center'
       }}
     >
-      {/* Animated background spheres behind card */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute top-[-20%] right-[-10%] w-[300px] h-[300px] bg-[#FF2B2B]/15 rounded-full blur-[80px]"
-          style={{ animation: 'breatheLight 6s ease-in-out infinite' }}
-        />
-        <div 
-          className="absolute bottom-[-10%] left-[-5%] w-[250px] h-[250px] bg-[#D1001F]/10 rounded-full blur-[70px]"
-          style={{ animation: 'breatheLight 8s ease-in-out infinite', animationDelay: '1s' }}
-        />
-      </div>
-
       {/* Corner decorations */}
       <div className="absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-[rgba(255,43,43,0.4)] rounded-tl-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
       <div className="absolute bottom-0 right-0 w-12 h-12 border-r-2 border-b-2 border-[rgba(255,43,43,0.4)] rounded-br-lg opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
@@ -497,17 +469,9 @@ function ShowcaseCard({ products, formatPrice }: ShowcaseCardProps) {
 
   return (
     <GlassPanel variant="accent" className="relative overflow-hidden group">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div 
-          className="absolute top-[-50%] left-[20%] w-[600px] h-[600px] bg-[#FF2B2B]/5 rounded-full blur-[120px]"
-          style={{ animation: 'breatheLight 10s ease-in-out infinite' }}
-        />
-      </div>
-
-      {/* Blueprint grid overlay */}
+      {/* Blueprint grid overlay - subtle */}
       <div 
-        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
           backgroundImage: `
             linear-gradient(rgba(255, 43, 43, 0.3) 1px, transparent 1px),
