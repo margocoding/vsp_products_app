@@ -36,7 +36,7 @@ function CategoryItem({
 
   // Check if any child is active
   const hasActiveChild = category.children?.some(
-    (child) => activeSubcategoryId === child.id
+    (child) => activeSubcategoryId === child.id,
   );
 
   return (
@@ -46,7 +46,7 @@ function CategoryItem({
           "flex items-center gap-2.5 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-300 min-w-full group select-none relative overflow-hidden",
           isActive || hasActiveChild
             ? "bg-[rgba(255,43,43,0.15)] border border-[rgba(255,43,43,0.4)] shadow-lg shadow-[rgba(255,43,43,0.15)]"
-            : "hover:bg-[rgba(255,43,43,0.08)] hover:border-[rgba(255,43,43,0.2)] border border-transparent"
+            : "hover:bg-[rgba(255,43,43,0.08)] hover:border-[rgba(255,43,43,0.2)] border border-transparent",
         )}
         onClick={handleClick}
       >
@@ -62,18 +62,20 @@ function CategoryItem({
               size={14}
               className={cn(
                 "transition-all duration-300",
-                isExpanded 
-                  ? "text-[#FF2B2B] rotate-90" 
-                  : "text-[#6B7280] group-hover:text-[#FF2B2B]"
+                isExpanded
+                  ? "text-[#FF2B2B] rotate-90"
+                  : "text-[#6B7280] group-hover:text-[#FF2B2B]",
               )}
             />
           ) : (
-            <div className={cn(
-              "w-1.5 h-1.5 rounded-full transition-all duration-300",
-              isActive 
-                ? "bg-[#FF2B2B] shadow-[0_0_10px_#FF2B2B]" 
-                : "bg-[#6B7280] group-hover:bg-[#FF2B2B]"
-            )} />
+            <div
+              className={cn(
+                "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                isActive
+                  ? "bg-[#FF2B2B] shadow-[0_0_10px_#FF2B2B]"
+                  : "bg-[#6B7280] group-hover:bg-[#FF2B2B]",
+              )}
+            />
           )}
         </div>
 
@@ -83,7 +85,7 @@ function CategoryItem({
             "text-xs font-medium uppercase tracking-wide transition-all duration-300 relative z-10",
             isActive || hasActiveChild
               ? "text-[#FF2B2B] neon-text"
-              : "text-[#9CA3AF] group-hover:text-[#F5F5F5]"
+              : "text-[#9CA3AF] group-hover:text-[#F5F5F5]",
           )}
         >
           {category.name}
@@ -100,27 +102,29 @@ function CategoryItem({
                 "flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-all duration-300 min-w-full group select-none relative overflow-hidden",
                 activeSubcategoryId === child.id
                   ? "bg-[rgba(255,43,43,0.2)] border border-[rgba(255,43,43,0.5)] shadow-md shadow-[rgba(255,43,43,0.2)]"
-                  : "hover:bg-[rgba(255,43,43,0.08)] hover:border-[rgba(255,43,43,0.2)] border border-transparent"
+                  : "hover:bg-[rgba(255,43,43,0.08)] hover:border-[rgba(255,43,43,0.2)] border border-transparent",
               )}
               onClick={(e) => handleSubcategorySelect(e, child.id)}
             >
               {/* Empty space for alignment */}
               <div className="w-4 shrink-0" />
-              
+
               {/* Active indicator dot */}
-              <div className={cn(
-                "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                activeSubcategoryId === child.id
-                  ? "bg-[#FF2B2B] shadow-[0_0_8px_#FF2B2B]"
-                  : "bg-[#6B7280] group-hover:bg-[#FF2B2B]"
-              )} />
-              
+              <div
+                className={cn(
+                  "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                  activeSubcategoryId === child.id
+                    ? "bg-[#FF2B2B] shadow-[0_0_8px_#FF2B2B]"
+                    : "bg-[#6B7280] group-hover:bg-[#FF2B2B]",
+                )}
+              />
+
               <span
                 className={cn(
                   "text-xs font-medium uppercase tracking-wide transition-all duration-300",
                   activeSubcategoryId === child.id
                     ? "text-[#FF2B2B] neon-text"
-                    : "text-[#9CA3AF] group-hover:text-[#F5F5F5]"
+                    : "text-[#9CA3AF] group-hover:text-[#F5F5F5]",
                 )}
               >
                 {child.name}
@@ -153,22 +157,23 @@ export function Sidebar({
   return (
     <>
       {/* Mobile overlay */}
-      <div 
+      <div
         className={cn(
           "fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none",
         )}
         onClick={onClose}
       />
-      
+
       {/* Sidebar */}
-      <aside className={cn(
-        "w-72 shrink-0 lg:block",
-        "fixed lg:static top-0 left-0 h-full lg:h-auto z-50 lg:z-auto",
-        "transform transition-transform duration-300 lg:transform-none",
-        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-      )}>
-        <GlassPanel 
+      <aside
+        className={cn(
+          "w-72 shrink-0 lg:block",
+          "fixed lg:static top-0 left-0 h-full lg:h-auto z-50 lg:z-auto",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        )}
+      >
+        <GlassPanel
           variant="sidebar"
           className="rounded-none border-t-0 border-b-0 border-r-0 lg:rounded-none h-full"
         >
@@ -187,14 +192,14 @@ export function Sidebar({
                 <X size={18} />
               </button>
             </div>
-            
+
             {/* Header */}
             <div className="hidden lg:block p-4 border-b border-[rgba(255,43,43,0.1)]">
               <h2 className="text-xs font-bold text-[#9CA3AF] uppercase tracking-[0.2em] flex items-center gap-2">
                 <Layers size={14} className="text-[#FF2B2B]" />
                 Навигация
               </h2>
-              
+
               {/* Mini stat widget */}
               <div className="mt-3 flex items-center gap-2 text-[10px] text-[#6B7280]">
                 <TrendingUp size={12} className="text-[#FF2B2B]" />
