@@ -11,6 +11,7 @@
   --color-red-glow: #8A0000;
   --color-crimson: #D1001F;
   --color-red-dark: #5a0000;
+  --color-red-bright: #ff4444;
   
   /* Text colors */
   --color-text-primary: #F5F5F5;
@@ -26,6 +27,7 @@
   --glow-red-soft: rgba(255, 43, 43, 0.15);
   --glow-red-medium: rgba(255, 43, 43, 0.25);
   --glow-red-intense: rgba(255, 43, 43, 0.4);
+  --glow-red-extreme: rgba(255, 43, 43, 0.6);
 }
 
 /* Custom scrollbar */
@@ -42,10 +44,12 @@
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--color-crimson), var(--color-red-glow));
   border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 43, 43, 0.3);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, var(--color-red-neon), var(--color-crimson));
+  box-shadow: 0 0 15px rgba(255, 43, 43, 0.5);
 }
 
 * {
@@ -83,12 +87,14 @@ h1, h2, h3, h4, h5, h6 {
 ::selection {
   background: var(--color-red-neon);
   color: var(--color-black-deep);
+  text-shadow: 0 0 10px rgba(255, 43, 43, 0.5);
 }
 
 /* Focus outline */
 :focus-visible {
   outline: 2px solid var(--color-red-neon);
   outline-offset: 2px;
+  box-shadow: 0 0 20px rgba(255, 43, 43, 0.4);
 }
 
 /* Animated gradient border utility */
@@ -139,14 +145,87 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Floating red sphere animation */
+@keyframes floatSphere {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(20px, -30px) scale(1.05);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-15px, 20px) scale(0.95);
+    opacity: 0.35;
+  }
+  75% {
+    transform: translate(10px, -15px) scale(1.02);
+    opacity: 0.45;
+  }
+}
+
+/* Neon glow pulse animation */
+@keyframes neonPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(255, 43, 43, 0.2), 0 0 20px rgba(255, 43, 43, 0.1), inset 0 0 15px rgba(255, 43, 43, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 43, 43, 0.4), 0 0 40px rgba(255, 43, 43, 0.2), inset 0 0 25px rgba(255, 43, 43, 0.1);
+  }
+}
+
+/* Edge sweep animation */
+@keyframes edgeSweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Holographic flicker */
+@keyframes holographicFlicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.95;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.98;
+  }
+}
+
+/* Breathing light animation */
+@keyframes breatheLight {
+  0%, 100% {
+    filter: blur(80px);
+    opacity: 0.3;
+  }
+  50% {
+    filter: blur(100px);
+    opacity: 0.5;
+  }
+}
+
 /* Utility classes */
 .neon-text {
-  text-shadow: 0 0 10px rgba(255, 43, 43, 0.5), 0 0 20px rgba(255, 43, 43, 0.3);
+  text-shadow: 0 0 10px rgba(255, 43, 43, 0.5), 0 0 20px rgba(255, 43, 43, 0.3), 0 0 30px rgba(255, 43, 43, 0.15);
+}
+
+.neon-text-intense {
+  text-shadow: 0 0 10px rgba(255, 43, 43, 0.8), 0 0 20px rgba(255, 43, 43, 0.5), 0 0 30px rgba(255, 43, 43, 0.3), 0 0 40px rgba(255, 43, 43, 0.15);
 }
 
 .neon-border {
   border: 1px solid rgba(255, 43, 43, 0.3);
   box-shadow: 0 0 10px rgba(255, 43, 43, 0.1), inset 0 0 20px rgba(255, 43, 43, 0.05);
+  animation: neonPulse 3s ease-in-out infinite;
 }
 
 .glass-panel {
@@ -155,17 +234,65 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 43, 43, 0.5), transparent);
+  transition: left 0.6s ease-out;
+}
+
+.glass-panel:hover::before {
+  left: 100%;
 }
 
 .glass-panel-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .glass-panel-hover:hover {
-  background: rgba(15, 15, 18, 0.7);
+  background: rgba(15, 15, 18, 0.75);
   border-color: rgba(255, 43, 43, 0.4);
-  box-shadow: 0 0 30px rgba(255, 43, 43, 0.15), inset 0 0 40px rgba(255, 43, 43, 0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(255, 43, 43, 0.2), inset 0 0 50px rgba(255, 43, 43, 0.08);
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Advanced glassmorphism with layered transparency */
+.glass-advanced {
+  background: rgba(10, 10, 13, 0.45);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 43, 43, 0.2);
+  border-top-color: rgba(255, 43, 43, 0.35);
+  border-bottom-color: rgba(255, 43, 43, 0.15);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 40px rgba(255, 43, 43, 0.1),
+    inset 0 0 30px rgba(255, 43, 43, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.glass-advanced::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 43, 43, 0.03) 0%,
+    transparent 50%,
+    rgba(255, 43, 43, 0.02) 100%
+  );
+  pointer-events: none;
+  border-radius: inherit;
 }
 
 /* Import Google Fonts */
