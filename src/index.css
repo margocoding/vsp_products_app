@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
 
 :root {
   /* Core colors - Deep black & graphite base */
@@ -213,6 +214,92 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Sphere float animation */
+@keyframes sphereFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  66% {
+    transform: translate(-20px, 30px) scale(0.95);
+  }
+}
+
+/* Holographic slide transition */
+@keyframes holoSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(50px) scale(0.95);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes holoSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50px) scale(0.95);
+    filter: blur(10px);
+  }
+}
+
+/* Cascade animation for secondary cards */
+@keyframes cascadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Glow trail effect */
+@keyframes glowTrail {
+  0% {
+    opacity: 0.8;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.5);
+  }
+}
+
+/* Rotating border glow */
+@keyframes borderRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tilt effect transform */
+@keyframes tiltFloat {
+  0%, 100% {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+  }
+  25% {
+    transform: perspective(1000px) rotateX(1deg) rotateY(-1deg);
+  }
+  75% {
+    transform: perspective(1000px) rotateX(-1deg) rotateY(1deg);
+  }
+}
+
 /* Utility classes */
 .neon-text {
   text-shadow: 0 0 10px rgba(255, 43, 43, 0.5), 0 0 20px rgba(255, 43, 43, 0.3), 0 0 30px rgba(255, 43, 43, 0.15);
@@ -295,5 +382,119 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: inherit;
 }
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
+/* Holographic card base */
+.holo-card {
+  background: rgba(10, 10, 12, 0.45);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid rgba(255, 50, 50, 0.25);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(255, 43, 43, 0.15),
+    inset 0 0 40px rgba(255, 43, 43, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.holo-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 43, 43, 0.3) 0%,
+    transparent 25%,
+    rgba(255, 43, 43, 0.1) 50%,
+    transparent 75%,
+    rgba(255, 43, 43, 0.3) 100%
+  );
+  z-index: -1;
+  opacity: 0.5;
+  animation: borderRotate 4s linear infinite;
+}
+
+.holo-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 43, 43, 0.05) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255, 43, 43, 0.03) 100%
+  );
+  pointer-events: none;
+}
+
+.holo-card:hover {
+  transform: translateY(-8px) scale(1.02) perspective(1000px) rotateX(2deg);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 100px rgba(255, 43, 43, 0.25),
+    inset 0 0 60px rgba(255, 43, 43, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 50, 50, 0.4);
+}
+
+/* Hero card specific styles */
+.holo-card-hero {
+  grid-column: span 1;
+  min-height: 500px;
+}
+
+/* Navigation button holographic */
+.nav-button-holo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(10, 10, 12, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 43, 43, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button-holo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 43, 43, 0.2) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.nav-button-holo:hover {
+  border-color: rgba(255, 43, 43, 0.6);
+  box-shadow: 
+    0 0 30px rgba(255, 43, 43, 0.4),
+    0 0 60px rgba(255, 43, 43, 0.2),
+    inset 0 0 20px rgba(255, 43, 43, 0.1);
+  transform: scale(1.1);
+}
+
+.nav-button-holo:hover::before {
+  opacity: 1;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.nav-button-holo svg {
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.nav-button-holo:hover svg {
+  color: #FF2B2B;
+  transform: scale(1.2);
+}

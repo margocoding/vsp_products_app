@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Header } from "@/widgets/header/ui/header";
 import { Sidebar } from "@/widgets/sidebar/ui/sidebar";
-import { Catalog } from "@/widgets/catalog/ui/catalog";
+import { HolographicCatalog } from "@/widgets/catalog/ui/holographic-catalog";
 import { Footer } from "@/widgets/footer/ui/footer";
 import { CartSidebar } from "@/widgets/cart-sidebar/ui/cart-sidebar";
 import { AnimatedBackground } from "@/shared/ui/animated-background";
@@ -145,10 +145,8 @@ export default function CatalogPage() {
 
           {/* Main Content */}
           <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8">
-            <Catalog
+            <HolographicCatalog
               products={filteredProducts}
-              searchQuery={searchQuery}
-              onSearch={setSearchQuery}
               onAddToCart={handleAddToCart}
             />
           </main>
