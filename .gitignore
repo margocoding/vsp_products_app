@@ -1,1 +1,6 @@
-Nothing should be ignored since the changes only include source files (.css, .tsx) without any build artifacts, dependencies, or temporary files.
+```
+# Build artifacts
+dist/
+*.js
+*.css
+```
