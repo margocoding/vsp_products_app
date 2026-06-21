@@ -2,6 +2,7 @@
 
 import { ChevronRight, ChevronDown, X } from 'lucide-react';
 import { useCategoryStore } from '@/store/categoryStore';
+import type { Category } from '@/types/types';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -10,7 +11,6 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const {
-    categories,
     getRootCategories,
     getChildCategories,
     activeCategoryId,
@@ -21,7 +21,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const rootCategories = getRootCategories();
 
-  const handleCategoryClick = (id: number, hasChildren: boolean, isMobile: boolean) => {
+  const handleCategoryClick = (
+    id: string,
+    hasChildren: boolean,
+    isMobile: boolean,
+  ) => {
     setActiveCategory(id);
     if (hasChildren) {
       toggleExpanded(id);
@@ -31,26 +35,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
   };
 
-  const renderCategory = (
-    categoryId: number,
-    isSubcategory: boolean = false,
-    isMobile: boolean = false
-  ) => {
-    const category = categories.find((c) => c.id === categoryId);
-    if (!category) return null;
+  const renderCategory = (category: Category, isMobile: boolean) => {
+    const children = getChildCategories(category.id);
+    const hasChildren = (children?.length || 0) > 0;
+    const isActive = activeCategoryId === category.id;
+    const isExpanded = expandedCategoryIds.includes(category.id);
 
-    const children = getChildCategories(categoryId);
-    const hasChildren = children.length > 0;
-    const isActive = activeCategoryId === categoryId;
-    const isExpanded = expandedCategoryIds.includes(categoryId);
 
     return (
-      <div key={categoryId}>
+      <div key={category.id}>
+        {/* Корневая категория */}
         <button
-          onClick={() => handleCategoryClick(categoryId, hasChildren, isMobile)}
+          onClick={() => handleCategoryClick(category.id, hasChildren, isMobile)}
           className={`sidebar-item w-full flex items-center justify-between px-4 py-3 text-xs tracking-wider transition-colors ${
             isActive ? 'active text-red-500' : 'text-white/50 hover:text-white'
-          } ${isSubcategory ? 'pl-8' : ''}`}
+          }`}
         >
           <span className="text-left flex-1 truncate">{category.name}</span>
           {hasChildren ? (
@@ -64,10 +63,25 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           ) : null}
         </button>
 
-        {/* Подкатегории */}
+        {/* Подкатегории (только 1 уровень глубины) */}
         {hasChildren && isExpanded && (
           <div className="space-y-0.5">
-            {children.map((child) => renderCategory(child.id, true, isMobile))}
+            {children?.map((child) => (
+              <button
+                key={child.id}
+                onClick={() => handleCategoryClick(child.id, false, isMobile)}
+                className={`sidebar-item w-full flex items-center justify-between px-4 py-3 pl-8 text-xs tracking-wider transition-colors ${
+                  activeCategoryId === child.id
+                    ? 'active text-red-500'
+                    : 'text-white/50 hover:text-white'
+                }`}
+              >
+                <span className="text-left flex-1 truncate">{child.name}</span>
+                {activeCategoryId === child.id && (
+                  <ChevronRight size={14} className="shrink-0 ml-2" />
+                )}
+              </button>
+            ))}
           </div>
         )}
       </div>
@@ -76,7 +90,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const renderMenuItems = (isMobile: boolean) => (
     <div className="space-y-0.5">
-      {rootCategories.map((cat) => renderCategory(cat.id, false, isMobile))}
+      {rootCategories.map((cat) => renderCategory(cat, isMobile))}
     </div>
   );
 

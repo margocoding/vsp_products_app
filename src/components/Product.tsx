@@ -1,11 +1,11 @@
 'use client';
 
+import { useCartStore } from '@/store/cartStore';
 import { Product } from '@/types/types';
-import { Plus, Star } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import Button from './ui/Button';
-import { useCartStore } from '@/store/cartStore';
-import { toast } from 'react-toastify';
+import { getImageUrl } from '@/common/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -16,19 +16,19 @@ export default function ProductCard({
   product,
   featured = false,
 }: ProductCardProps) {
-  const isInStock = product.status === 'IN STOCK';
+  const available = product.quantity ?? 0;
+  const isInStock = available > 0;
+
   const addItem = useCartStore((state) => state.addItem);
 
   const handleAddToCart = () => {
     if (!isInStock) return;
-    
     addItem(product);
   };
 
   return (
     <div className="relative group h-full">
-      {/* Hover background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-linear-to-br from-red-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       <div
         className="
@@ -41,10 +41,7 @@ export default function ProductCard({
           flex flex-col
         "
       >
-        {/* Accent line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-        {/* Header */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-red-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
             <h3
@@ -84,9 +81,7 @@ export default function ProductCard({
                 <span className="text-white/30 uppercase tracking-wider text-[10px] block">
                   LENGTH
                 </span>
-                <p className="text-white/70 font-light">
-                  {product.length}
-                </p>
+                <p className="text-white/70 font-light">{product.length}</p>
               </div>
             )}
 
@@ -95,9 +90,7 @@ export default function ProductCard({
                 <span className="text-white/30 uppercase tracking-wider text-[10px] block">
                   WEIGHT
                 </span>
-                <p className="text-white/70 font-light">
-                  {product.weight}
-                </p>
+                <p className="text-white/70 font-light">{product.weight}</p>
               </div>
             )}
 
@@ -109,38 +102,40 @@ export default function ProductCard({
 
               <div className="flex items-center gap-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${isInStock
-                      ? 'bg-emerald-500 animate-pulse'
-                      : 'bg-red-500'
-                    }`}
+                  className={`w-2 h-2 rounded-full ${
+                    isInStock ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'
+                  }`}
                 />
 
                 <p
-                  className={`font-medium tracking-wider text-[11px] uppercase ${isInStock
-                      ? 'text-emerald-400'
-                      : 'text-red-500'
-                    }`}
+                  className={`font-medium tracking-wider text-[11px] uppercase ${
+                    isInStock ? 'text-emerald-400' : 'text-red-500'
+                  }`}
                 >
-                  {product.status}
+                  {isInStock ? 'В наличии' : 'Нет в наличии'}
                 </p>
               </div>
+
+              {isInStock && (
+                <p className="text-white/40 text-[10px] mt-1 tracking-wider">
+                  На складе: {available} шт
+                </p>
+              )}
             </div>
           </div>
 
-          {/* IMAGE (FIXED SQUARE) */}
-          <div className="flex-shrink-0 w-44">
+          {/* IMAGE */}
+          <div className="shrink-0 w-44">
             <div className="relative w-full aspect-square rounded-xl overflow-hidden border border-white/10 bg-white/5">
+            {product.image && 
               <Image
-                src={product.image || '/products/1.png'}
+                src={getImageUrl(product.image) || '/products/1.png'}
                 fill
                 alt={product.name}
-                className="
-                  object-contain
-                  p-3
-                  transition-transform duration-500
-                  group-hover:scale-110
-                "
+                unoptimized
+                className="object-contain p-3 transition-transform duration-500 group-hover:scale-110"
               />
+            }
             </div>
           </div>
         </div>
@@ -150,38 +145,29 @@ export default function ProductCard({
           <div>
             <div className="flex items-baseline gap-1">
               <span
-                className={`
-                  font-light text-white tracking-tight
-                  ${featured ? 'text-5xl' : 'text-3xl'}
-                `}
+                className={`font-light text-white tracking-tight ${
+                  featured ? 'text-5xl' : 'text-3xl'
+                }`}
               >
                 {product.price}
               </span>
-
-              <span className="text-lg text-white/50 font-light">
-                ₽
-              </span>
+              <span className="text-lg text-white/50 font-light">₽</span>
             </div>
-
-            <p className="text-[10px] text-white/40 -mt-1">
-              за единицу
-            </p>
+            <p className="text-[10px] text-white/40 -mt-1">за единицу</p>
           </div>
 
-          <Button 
+          <Button
             disabled={!isInStock}
             onClick={handleAddToCart}
-            className='z-10'
+            className="z-10"
           >
             <Plus size={15} />
-            <span>
-              {isInStock ? 'ДОБАВИТЬ' : 'НЕТ В НАЛИЧИИ'}
-            </span>
+            <span>{isInStock ? 'ДОБАВИТЬ' : 'НЕТ В НАЛИЧИИ'}</span>
           </Button>
         </div>
 
         {/* Hover glow */}
-        <div className="absolute bottom-0 right-0 w-40 h-40 bg-gradient-to-tl from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+        <div className="absolute bottom-0 right-0 w-40 h-40 bg-linear-to-tl from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       </div>
     </div>
   );
