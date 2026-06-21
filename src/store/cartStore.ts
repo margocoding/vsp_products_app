@@ -1,20 +1,22 @@
-import { create } from 'zustand';
-import { Product } from '@/types/types';
+"use client";
 
-export interface CartItem {
+import { create } from "zustand";
+import { Product } from "@/types/types";
+
+interface CartItem {
   id: string;
   name: string;
-  price: number;
-  quantity: number;
-  image: string;
   subtitle?: string;
+  image: string;
+  price: string;
+  quantity: number;
 }
 
 interface CartStore {
   items: CartItem[];
-  addItem: (product: Product) => void;
+  addItem: (product: Product, quantity?: number) => void;
+  updateQuantity: (id: string, quantity: number, maxAvailable: number) => void;
   removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   totalItems: () => number;
   totalPrice: () => number;
@@ -23,61 +25,68 @@ interface CartStore {
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
 
-  addItem: (product: Product) => {
-    set((state) => {
-      const existingItem = state.items.find((item) => item.id === product.id);
+  addItem: (product, quantity = 1) => {
+    // Нельзя добавить, если на складе нет
+    if (product.quantity <= 0) return;
 
-      if (existingItem) {
+    set((state) => {
+      const existing = state.items.find((i) => i.id === product.id);
+
+      if (existing) {
+        // Не превышаем остаток
+        const newQty = Math.min(existing.quantity + quantity, product.quantity);
         return {
-          items: state.items.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
+          items: state.items.map((i) =>
+            i.id === product.id ? { ...i, quantity: newQty } : i,
           ),
         };
-      } else {
-        const newItem: CartItem = {
-          id: product.id,
-          name: product.name,
-          price: parseFloat(product.price),
-          quantity: 1,
-          image: product.image,
-          subtitle: product.subtitle,
-        };
-        return { items: [...state.items, newItem] };
       }
+
+      // Новый товар
+      const qty = Math.min(quantity, product.quantity);
+      return {
+        items: [
+          ...state.items,
+          {
+            id: product.id,
+            name: product.name,
+            subtitle: product.subtitle,
+            image: product.image,
+            price: product.price,
+            quantity: qty,
+          },
+        ],
+      };
     });
   },
 
-  removeItem: (id: string) => {
+  updateQuantity: (id, quantity, maxAvailable) => {
+    if (quantity <= 0) {
+      get().removeItem(id);
+      return;
+    }
+
+    const clamped = Math.min(quantity, maxAvailable);
+
     set((state) => ({
-      items: state.items.filter((item) => item.id !== id),
+      items: state.items.map((i) =>
+        i.id === id ? { ...i, quantity: clamped } : i,
+      ),
     }));
   },
 
-  updateQuantity: (id: string, quantity: number) => {
-    if (quantity <= 0) {
-      set((state) => ({
-        items: state.items.filter((item) => item.id !== id),
-      }));
-    } else {
-      set((state) => ({
-        items: state.items.map((item) =>
-          item.id === id ? { ...item, quantity } : item
-        ),
-      }));
-    }
-  },
+  removeItem: (id) =>
+    set((state) => ({
+      items: state.items.filter((i) => i.id !== id),
+    })),
 
-  clearCart: () => {
-    set({ items: [] });
-  },
+  clearCart: () => set({ items: [] }),
 
-  totalItems: () => {
-    return get().items.reduce((sum, item) => sum + item.quantity, 0);
-  },
+  totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 
-  totalPrice: () => {
-    return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  },
+  totalPrice: () =>
+    get().items.reduce((sum, i) => {
+      const price = parseFloat(i.price);
+      return sum + (isNaN(price) ? 0 : price * i.quantity);
+    }, 0),
 }));

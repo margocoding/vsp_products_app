@@ -1,3 +1,21 @@
+export interface PublishedSite {
+  id: string;
+  domain: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  parentId?: string | null;
+  productsCount: number;
+  children?: {
+    id: string;
+    name: string;
+    productsCount: number;
+  }[];
+  createdAt?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -7,9 +25,11 @@ export interface Product {
   weight?: string;
   price: string;
   priceUnit: string;
-  status: 'IN STOCK' | 'OUT OF STOCK';
   image: string;
-  type: 'rail' | 'component';
+  categoryId?: string | null;
+  publishedSitesCount: number;
+  quantity: number;
+  createdAt: string;
 }
 
 export interface Stat {

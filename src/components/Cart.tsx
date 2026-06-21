@@ -1,11 +1,24 @@
-'use client';
+"use client";
 
-import { X, Minus, Plus, Trash2, ShoppingBag, Mail, MessageSquare, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'react-toastify';
-import { useCartStore } from '@/store/cartStore';
+import {
+  X,
+  Minus,
+  Plus,
+  Trash2,
+  ShoppingBag,
+  Mail,
+  MessageSquare,
+  AlertCircle,
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "react-toastify";
+import { useCartStore } from "@/store/cartStore";
+import { useProductStore } from "@/store/productStore";
+import { ordersApi } from "@/api/orders.api";
+import Image from "next/image";
+import { getImageUrl } from "@/common/utils";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -15,11 +28,11 @@ interface CartDrawerProps {
 const checkoutSchema = z.object({
   email: z
     .string()
-    .min(1, 'Укажите email для связи')
-    .email('Введите корректный email адрес'),
+    .min(1, "Укажите email для связи")
+    .email("Введите корректный email адрес"),
   comment: z
     .string()
-    .max(300, 'Комментарий не должен превышать 300 символов')
+    .max(300, "Комментарий не должен превышать 300 символов")
     .optional(),
 });
 
@@ -33,6 +46,11 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const totalItems = useCartStore((state) => state.totalItems());
   const totalPrice = useCartStore((state) => state.totalPrice());
 
+  // Актуальные остатки с сервера
+  const products = useProductStore((s) => s.products);
+  const getAvailable = (productId: string) =>
+    products.find((p) => p.id === productId)?.quantity ?? 0;
+
   const {
     register,
     handleSubmit,
@@ -40,24 +58,58 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     reset,
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
-    mode: 'onBlur',
+    mode: "onBlur",
   });
 
   const onSubmit = async (data: CheckoutFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    // Проверяем, не превышен ли остаток по всем товарам
+    for (const item of items) {
+      const available = getAvailable(item.id);
+      if (available <= 0) {
+        toast.error(`Товар "${item.name}" закончился на складе`, {
+          position: "top-right",
+        });
+        return;
+      }
+      if (item.quantity > available) {
+        toast.error(
+          `Недостаточно "${item.name}". Доступно: ${available} шт`,
+          { position: "top-right" },
+        );
+        return;
+      }
+    }
 
-    toast.success('Заказ успешно оформлен! Мы свяжемся с вами.', {
-      position: 'top-right',
-      autoClose: 4000,
-      hideProgressBar: true,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
+    const orderItems = items.map((item) => ({
+      productId: item.id,
+      quantity: item.quantity,
+    }));
 
-    clearCart();
-    reset();
-    onClose();
+    try {
+      await ordersApi.create({
+        email: data.email,
+        comment: data.comment,
+        items: orderItems,
+      });
+
+      toast.success("Заказ успешно оформлен! Мы свяжемся с вами.", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: true,
+      });
+
+      clearCart();
+      reset();
+      onClose();
+    } catch (error: any) {
+      const msg = error?.response?.data?.message;
+      toast.error(
+        Array.isArray(msg)
+          ? msg[0]
+          : msg || "Не удалось оформить заказ. Попробуйте ещё раз.",
+        { position: "top-right", autoClose: 5000 },
+      );
+    }
   };
 
   return (
@@ -73,7 +125,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         className={`
           fixed inset-y-0 right-0 z-[60] w-full sm:w-[420px] bg-black/95 backdrop-blur-xl border-l border-white/10
           transform transition-transform duration-300 ease-in-out flex flex-col
-          ${isOpen ? 'translate-x-0' : 'translate-x-full'}
+          ${isOpen ? "translate-x-0" : "translate-x-full"}
         `}
       >
         {/* Header */}
@@ -83,9 +135,16 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <ShoppingBag size={20} className="text-red-500" />
             </div>
             <div>
-              <h2 className="text-base font-bold tracking-wider text-white">КОРЗИНА</h2>
+              <h2 className="text-base font-bold tracking-wider text-white">
+                КОРЗИНА
+              </h2>
               <p className="text-[10px] text-white/40 tracking-widest mt-0.5">
-                {totalItems} {totalItems === 1 ? 'ТОВАР' : totalItems < 5 ? 'ТОВАРА' : 'ТОВАРОВ'}
+                {totalItems}{" "}
+                {totalItems === 1
+                  ? "ТОВАР"
+                  : totalItems < 5
+                    ? "ТОВАРА"
+                    : "ТОВАРОВ"}
               </p>
             </div>
           </div>
@@ -105,64 +164,130 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-5">
                 <ShoppingBag size={36} className="text-white/20" />
               </div>
-              <p className="text-white/50 text-sm tracking-widest font-medium">КОРЗИНА ПУСТА</p>
+              <p className="text-white/50 text-sm tracking-widest font-medium">
+                КОРЗИНА ПУСТА
+              </p>
               <p className="text-white/30 text-xs mt-2 tracking-wide">
                 Добавьте товары из каталога
               </p>
             </div>
           ) : (
-            items.map((item) => (
-              <div
-                key={item.id}
-                className="glass-card p-4 flex gap-4 group hover:border-red-500/30 transition-colors"
-              >
-                <div className="w-20 h-20 rounded-lg overflow-hidden bg-white/5 border border-white/10 shrink-0">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
-                </div>
+            items.map((item) => {
+              const available = getAvailable(item.id);
+              const isOutOfStock = available <= 0;
+              const exceedsStock = item.quantity > available;
 
-                <div className="flex-1 min-w-0 flex flex-col justify-between">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-semibold text-white truncate">{item.name}</h3>
-                      {item.subtitle && (
-                        <p className="text-[10px] text-red-500/70 tracking-widest mt-0.5">{item.subtitle}</p>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="text-white/30 hover:text-red-500 transition-colors p-1 shrink-0 hover:bg-red-500/10 rounded"
-                      aria-label="Remove item"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+              return (
+                <div
+                  key={item.id}
+                  className="glass-card p-4 flex gap-4 group hover:border-red-500/30 transition-colors"
+                >
+                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-white/5 border border-white/10 shrink-0 relative">
+                    <Image
+                      src={getImageUrl(item.image)}
+                      width={100}
+                      height={100}
+                      unoptimized
+                      alt={item.name}
+                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                    />
+                    {isOutOfStock && (
+                      <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                        <span className="text-[9px] text-red-500 font-bold tracking-wider">
+                          НЕТ
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="flex items-center gap-2">
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm font-semibold text-white truncate">
+                          {item.name}
+                        </h3>
+                        {item.subtitle && (
+                          <p className="text-[10px] text-red-500/70 tracking-widest mt-0.5">
+                            {item.subtitle}
+                          </p>
+                        )}
+                        <p
+                          className={`text-[10px] mt-0.5 tracking-wider ${
+                            isOutOfStock
+                              ? "text-red-500"
+                              : "text-white/40"
+                          }`}
+                        >
+                          {isOutOfStock
+                            ? "Нет в наличии"
+                            : `На складе: ${available} шт`}
+                        </p>
+                      </div>
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-7 h-7 rounded border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                        onClick={() => removeItem(item.id)}
+                        className="text-white/30 hover:text-red-500 transition-colors p-1 shrink-0 hover:bg-red-500/10 rounded"
+                        aria-label="Remove item"
                       >
-                        <Minus size={12} />
-                      </button>
-                      <span className="text-sm font-semibold text-white min-w-[24px] text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-7 h-7 rounded border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all"
-                      >
-                        <Plus size={12} />
+                        <Trash2 size={14} />
                       </button>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-white">
-                        {(item.price * item.quantity).toLocaleString('ru-RU')}
-                        <span className="text-red-500 ml-1 text-xs">₽</span>
-                      </p>
+
+                    {(isOutOfStock || exceedsStock) && (
+                      <div className="flex items-center gap-1 mt-1.5 text-[10px] text-amber-400 tracking-wider">
+                        <AlertCircle size={10} />
+                        <span>
+                          {isOutOfStock
+                            ? "Товар закончился — удалите из корзины"
+                            : `Доступно только ${available} шт`}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.id,
+                              item.quantity - 1,
+                              available,
+                            )
+                          }
+                          disabled={item.quantity <= 1 || isOutOfStock}
+                          className="w-7 h-7 rounded border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          <Minus size={12} />
+                        </button>
+                        <span className="text-sm font-semibold text-white min-w-[24px] text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.id,
+                              item.quantity + 1,
+                              available,
+                            )
+                          }
+                          disabled={item.quantity >= available || isOutOfStock}
+                          className="w-7 h-7 rounded border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                          <Plus size={12} />
+                        </button>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-white">
+                          {(parseFloat(item.price) * item.quantity).toLocaleString(
+                            "ru-RU",
+                          )}
+                          <span className="text-red-500 ml-1 text-xs">₽</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -171,15 +296,21 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           <div className="border-t border-white/10 px-6 py-5 space-y-4 shrink-0 bg-black/80 backdrop-blur-xl">
             <div className="flex items-end justify-between pb-2">
               <div>
-                <p className="text-[10px] text-white/40 tracking-widest mb-1">ИТОГО К ОПЛАТЕ</p>
+                <p className="text-[10px] text-white/40 tracking-widest mb-1">
+                  ИТОГО К ОПЛАТЕ
+                </p>
                 <p className="text-2xl font-bold text-white">
-                  {totalPrice.toLocaleString('ru-RU')}
+                  {totalPrice.toLocaleString("ru-RU")}
                   <span className="text-red-500 ml-1 text-base">₽</span>
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] text-white/40 tracking-widest mb-1">ПОЗИЦИЙ</p>
-                <p className="text-lg font-semibold text-white/80">{totalItems}</p>
+                <p className="text-[10px] text-white/40 tracking-widest mb-1">
+                  ПОЗИЦИЙ
+                </p>
+                <p className="text-lg font-semibold text-white/80">
+                  {totalItems}
+                </p>
               </div>
             </div>
 
@@ -195,8 +326,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <input
                     type="email"
                     placeholder="Email для связи"
-                    {...register('email')}
-                    className={`input-neon w-full pl-10 pr-4 py-2.5 text-sm transition-all duration-300 ${errors.email ? 'border-red-500/60 shadow-[0_0_10px_rgba(255,40,40,0.15)]' : ''}`}
+                    {...register("email")}
+                    className={`input-neon w-full pl-10 pr-4 py-2.5 text-sm transition-all duration-300 ${errors.email ? "border-red-500/60 shadow-[0_0_10px_rgba(255,40,40,0.15)]" : ""}`}
                   />
                 </div>
                 {errors.email && (
@@ -218,8 +349,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <textarea
                     placeholder="Сроки доставки, вопросы или комментарии..."
                     rows={2}
-                    {...register('comment')}
-                    className={`input-neon w-full pl-10 pr-4 py-2.5 text-sm resize-none transition-all duration-300 ${errors.comment ? 'border-red-500/60' : ''}`}
+                    {...register("comment")}
+                    className={`input-neon w-full pl-10 pr-4 py-2.5 text-sm resize-none transition-all duration-300 ${errors.comment ? "border-red-500/60" : ""}`}
                   />
                 </div>
                 {errors.comment && (
@@ -243,7 +374,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     ОБРАБОТКА...
                   </>
                 ) : (
-                  'ОФОРМИТЬ ЗАКАЗ'
+                  "ОФОРМИТЬ ЗАКАЗ"
                 )}
               </button>
             </form>
