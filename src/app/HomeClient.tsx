@@ -130,8 +130,8 @@ export default function HomeClient({
     <main className="min-h-screen relative">
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/background.png)' }} />
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
+        <div className="absolute inset-0 bg-linear-to-br from-black/80 via-black/60 to-black/80" />
+        <div className="absolute inset-0 bg-linear-to-r from-black/40 via-transparent to-black/40" />
       </div>
 
       <div className="relative z-10">
@@ -140,7 +140,7 @@ export default function HomeClient({
         <div className="flex pt-20 md:pt-24">
           {isSidebarOpen && (
             <div
-              className="fixed inset-0 bg-black/60 z-[55] md:hidden backdrop-blur-sm transition-opacity duration-300"
+              className="fixed inset-0 bg-black/60 z-55 md:hidden backdrop-blur-sm transition-opacity duration-300"
               onClick={closeSidebar}
             />
           )}
@@ -243,8 +243,8 @@ export default function HomeClient({
         </div>
       </div>
 
-      <div className="fixed top-0 left-0 w-px h-full bg-gradient-to-b from-red-500/50 via-red-500/20 to-transparent z-50 pointer-events-none" />
-      <div className="fixed top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-red-500/20 to-red-500/50 z-50 pointer-events-none" />
+      <div className="fixed top-0 left-0 w-px h-full bg-linear-to-b from-red-500/50 via-red-500/20 to-transparent z-50 pointer-events-none" />
+      <div className="fixed top-0 right-0 w-px h-full bg-linear-to-b from-transparent via-red-500/20 to-red-500/50 z-50 pointer-events-none" />
 
       <ToastContainer />
     </main>

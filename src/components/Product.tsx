@@ -2,7 +2,7 @@
 
 import { useCartStore } from '@/store/cartStore';
 import { Product } from '@/types/types';
-import { Plus } from 'lucide-react';
+import { Plus, ImageOff } from 'lucide-react';
 import Image from 'next/image';
 import Button from './ui/Button';
 import { getImageUrl } from '@/common/utils';
@@ -25,6 +25,8 @@ export default function ProductCard({
     if (!isInStock) return;
     addItem(product);
   };
+
+  const hasImage = Boolean(product.image);
 
   return (
     <div className="relative group h-full">
@@ -127,15 +129,22 @@ export default function ProductCard({
           {/* IMAGE */}
           <div className="shrink-0 w-44">
             <div className="relative w-full aspect-square rounded-xl overflow-hidden border border-white/10 bg-white/5">
-            {product.image && 
-              <Image
-                src={getImageUrl(product.image) || '/products/1.png'}
-                fill
-                alt={product.name}
-                unoptimized
-                className="object-contain p-3 transition-transform duration-500 group-hover:scale-110"
-              />
-            }
+              {hasImage ? (
+                <Image
+                  src={getImageUrl(product.image)}
+                  fill
+                  alt={product.name}
+                  unoptimized
+                  className="object-contain p-3 transition-transform duration-500 group-hover:scale-110"
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white/20">
+                  <ImageOff size={32} strokeWidth={1} />
+                  <span className="text-[10px] uppercase tracking-wider">
+                    Нет изображения
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
