@@ -1,5 +1,6 @@
 import HomeClient from './HomeClient';
 import { Category, Product } from '@/types/types';
+import { headers } from 'next/headers';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -11,11 +12,11 @@ async function getInitialProducts(domain: string) {
       body: JSON.stringify({ domain }),
       cache: 'no-store',
     });
-    if (!res.ok) return { data: [] as Product[], total: 0 };
+    if (!res.ok) return { items: [] as Product[], total: 0 };
     return res.json();
   } catch (e) {
     console.error('[ssr] products fetch error:', e);
-    return { data: [] as Product[], total: 0 };
+    return { items: [] as Product[], total: 0 };
   }
 }
 
@@ -35,13 +36,15 @@ async function getCategories(domain: string): Promise<Category[]> {
 }
 
 export default async function Home() {
-  const domain = process.env.SITE_DOMAIN ?? 'localhost';
+  const headersList = await headers();
+  const host = headersList.get('host') ?? 'localhost';
+  // Убираем порт, если нужно (например, "localhost:3000" -> "localhost")
+  const domain = host.split(':')[0];
 
   const [initial, categories] = await Promise.all([
     getInitialProducts(domain),
     getCategories(domain),
   ]);
-
 
   return (
     <HomeClient
