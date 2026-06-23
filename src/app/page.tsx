@@ -40,6 +40,7 @@ export default async function Home() {
   const host = headersList.get('host') ?? 'localhost';
   console.log(host);
   const domain = host.split(':')[0];
+  console.log(domain);
 
   const [initial, categories] = await Promise.all([
     getInitialProducts(domain),
