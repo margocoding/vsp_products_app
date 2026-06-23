@@ -38,7 +38,7 @@ async function getCategories(domain: string): Promise<Category[]> {
 export default async function Home() {
   const headersList = await headers();
   const host = headersList.get('host') ?? 'localhost';
-  // Убираем порт, если нужно (например, "localhost:3000" -> "localhost")
+  console.log(host);
   const domain = host.split(':')[0];
 
   const [initial, categories] = await Promise.all([
