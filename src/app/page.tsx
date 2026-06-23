@@ -35,9 +35,6 @@ async function getCategories(domain: string): Promise<Category[]> {
 }
 
 export default async function Home() {
-  // const headersList = await import('next/headers').then(m => m.headers());
-  // const host = headersList.get('host') ?? 'localhost';
-  // const domain = host.split(':')[0];
   const domain = process.env.SITE_DOMAIN ?? 'localhost';
 
   const [initial, categories] = await Promise.all([

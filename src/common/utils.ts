@@ -1,4 +1,5 @@
-export function getImageUrl(path: string) {
+export function getImageUrl(path?: string) {
+  if(!path) return '/no-image.svg'
   if(path?.startsWith('http') || path?.startsWith('https')) {
     return path;
   }

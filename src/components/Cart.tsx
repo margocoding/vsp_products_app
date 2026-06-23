@@ -1,24 +1,27 @@
 "use client";
 
-import {
-  X,
-  Minus,
-  Plus,
-  Trash2,
-  ShoppingBag,
-  Mail,
-  MessageSquare,
-  AlertCircle,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "react-toastify";
+import { ordersApi } from "@/api/orders.api";
+import { getImageUrl } from "@/common/utils";
 import { useCartStore } from "@/store/cartStore";
 import { useProductStore } from "@/store/productStore";
-import { ordersApi } from "@/api/orders.api";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlertCircle,
+  ImageOff,
+  Mail,
+  MessageSquare,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Trash2,
+  X,
+} from "lucide-react";
 import Image from "next/image";
-import { getImageUrl } from "@/common/utils";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import { z } from "zod";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -72,10 +75,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         return;
       }
       if (item.quantity > available) {
-        toast.error(
-          `Недостаточно "${item.name}". Доступно: ${available} шт`,
-          { position: "top-right" },
-        );
+        toast.error(`Недостаточно "${item.name}". Доступно: ${available} шт`, {
+          position: "top-right",
+        });
         return;
       }
     }
@@ -116,14 +118,14 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     <>
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-[55] backdrop-blur-sm transition-opacity duration-300"
+          className="fixed inset-0 bg-black/60 z-55 backdrop-blur-sm transition-opacity duration-300"
           onClick={onClose}
         />
       )}
 
       <aside
         className={`
-          fixed inset-y-0 right-0 z-[60] w-full sm:w-[420px] bg-black/95 backdrop-blur-xl border-l border-white/10
+          fixed inset-y-0 right-0 z-60 w-full sm:w-105 bg-black/95 backdrop-blur-xl border-l border-white/10
           transform transition-transform duration-300 ease-in-out flex flex-col
           ${isOpen ? "translate-x-0" : "translate-x-full"}
         `}
@@ -183,14 +185,23 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   className="glass-card p-4 flex gap-4 group hover:border-red-500/30 transition-colors"
                 >
                   <div className="w-20 h-20 rounded-lg overflow-hidden bg-white/5 border border-white/10 shrink-0 relative">
-                    <Image
-                      src={getImageUrl(item.image)}
-                      width={100}
-                      height={100}
-                      unoptimized
-                      alt={item.name}
-                      className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
-                    />
+                    {item.image ? (
+                      <Image
+                        src={getImageUrl(item.image)}
+                        width={100}
+                        height={100}
+                        unoptimized
+                        alt={item.name}
+                        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-1 text-white/20">
+                        <ImageOff size={20} strokeWidth={1} />
+                        <span className="text-[5px] uppercase tracking-wider">
+                          Нет изображения
+                        </span>
+                      </div>
+                    )}
                     {isOutOfStock && (
                       <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
                         <span className="text-[9px] text-red-500 font-bold tracking-wider">
@@ -213,9 +224,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         )}
                         <p
                           className={`text-[10px] mt-0.5 tracking-wider ${
-                            isOutOfStock
-                              ? "text-red-500"
-                              : "text-white/40"
+                            isOutOfStock ? "text-red-500" : "text-white/40"
                           }`}
                         >
                           {isOutOfStock
@@ -258,7 +267,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         >
                           <Minus size={12} />
                         </button>
-                        <span className="text-sm font-semibold text-white min-w-[24px] text-center">
+                        <span className="text-sm font-semibold text-white min-w-6 text-center">
                           {item.quantity}
                         </span>
                         <button
@@ -277,9 +286,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold text-white">
-                          {(parseFloat(item.price) * item.quantity).toLocaleString(
-                            "ru-RU",
-                          )}
+                          {(
+                            parseFloat(item.price) * item.quantity
+                          ).toLocaleString("ru-RU")}
                           <span className="text-red-500 ml-1 text-xs">₽</span>
                         </p>
                       </div>
@@ -314,59 +323,31 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </div>
             </div>
 
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="h-px w-full bg-linear-to-r from-transparent via-white/10 to-transparent" />
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <div className="relative group">
-                  <Mail
-                    size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-red-500 transition-colors pointer-events-none"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email для связи"
-                    {...register("email")}
-                    className={`input-neon w-full pl-10 pr-4 py-2.5 text-sm transition-all duration-300 ${errors.email ? "border-red-500/60 shadow-[0_0_10px_rgba(255,40,40,0.15)]" : ""}`}
-                  />
-                </div>
-                {errors.email && (
-                  <div className="flex items-center gap-1.5 mt-1.5 ml-1 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <AlertCircle size={10} className="text-red-500" />
-                    <p className="text-[10px] text-red-500 tracking-wider font-medium">
-                      {errors.email.message}
-                    </p>
-                  </div>
-                )}
-              </div>
+              <Input
+                type="email"
+                placeholder="Email для связи"
+                icon={<Mail size={14} />}
+                error={errors.email?.message}
+                {...register("email")}
+              />
 
-              <div>
-                <div className="relative group">
-                  <MessageSquare
-                    size={14}
-                    className="absolute left-3 top-3 text-white/30 group-focus-within:text-red-500 transition-colors pointer-events-none"
-                  />
-                  <textarea
-                    placeholder="Сроки доставки, вопросы или комментарии..."
-                    rows={2}
-                    {...register("comment")}
-                    className={`input-neon w-full pl-10 pr-4 py-2.5 text-sm resize-none transition-all duration-300 ${errors.comment ? "border-red-500/60" : ""}`}
-                  />
-                </div>
-                {errors.comment && (
-                  <div className="flex items-center gap-1.5 mt-1.5 ml-1 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <AlertCircle size={10} className="text-red-500" />
-                    <p className="text-[10px] text-red-500 tracking-wider font-medium">
-                      {errors.comment.message}
-                    </p>
-                  </div>
-                )}
-              </div>
+              <Input
+                textarea
+                placeholder="Сроки доставки, вопросы или комментарии..."
+                rows={2}
+                icon={<MessageSquare size={14} />}
+                error={errors.comment?.message}
+                {...register("comment")}
+              />
 
-              <button
+              <Button
                 type="submit"
+                variant="neon"
                 disabled={isSubmitting}
-                className="btn-neon w-full py-3.5 text-sm tracking-widest font-semibold mt-2 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-3.5 mt-2"
               >
                 {isSubmitting ? (
                   <>
@@ -376,7 +357,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 ) : (
                   "ОФОРМИТЬ ЗАКАЗ"
                 )}
-              </button>
+              </Button>
             </form>
           </div>
         )}
