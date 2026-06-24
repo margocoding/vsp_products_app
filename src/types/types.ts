@@ -16,19 +16,28 @@ export interface Category {
   createdAt?: string;
 }
 
+export type ProductCondition = 'NEW' | 'USED' | 'REFURBISHED' | 'RESERVED';
+
+export interface Characteristic {
+  id: string;
+  title: string;
+  value: string;
+}
+
 export interface Product {
   id: string;
+  slug: string;
   name: string;
   subtitle?: string;
-  standard?: string;
-  length?: string;
-  weight?: string;
   price: string;
   priceUnit: string;
-  image: string;
+  image: string | null;
   categoryId?: string | null;
   publishedSitesCount: number;
   quantity: number;
+  unit: string;
+  condition: ProductCondition;
+  characteristics: Characteristic[];
   createdAt: string;
 }
 

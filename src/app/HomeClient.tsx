@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import Header from '@/components/Header';
-import ProductCard from '@/components/Product';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import ProductCard from '@/components/ProductCard';
 import Sidebar from '@/components/Sidebar';
 import CartDrawer from '@/components/Cart';
 import { Search } from 'lucide-react';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import { useCartStore } from '@/store/cartStore';
 import { useCategoryStore } from '@/store/categoryStore';
 import { useProductStore } from '@/store/productStore';
+import { useUIStore } from '@/store/uiStore';
 import { Product, Category } from '@/types/types';
 
 interface HomeClientProps {
@@ -23,6 +21,14 @@ interface HomeClientProps {
   categories: Category[];
 }
 
+const productWord = (n: number) => {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return 'товар';
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'товара';
+  return 'товаров';
+};
+
 export default function HomeClient({
   domain,
   initialProducts,
@@ -31,21 +37,15 @@ export default function HomeClient({
   limit,
   categories,
 }: HomeClientProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
-
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const isInitialMount = useRef(true);
   const isFirstCategoryChange = useRef(true);
 
-  const totalItems = useCartStore((state) => state.totalItems());
-  const activeCategoryId = useCategoryStore((state) => state.activeCategoryId);
-
-  const activeCategory = useCategoryStore((state) =>
-    state.activeCategoryId
-      ? state.flat.find((c) => c.id === state.activeCategoryId) ?? null
-      : null
+  // Zustand stores
+  const totalItems = useCartStore((s) => s.totalItems());
+  const activeCategoryId = useCategoryStore((s) => s.activeCategoryId);
+  const activeCategory = useCategoryStore((s) =>
+    s.activeCategoryId ? s.flat.find((c) => c.id === s.activeCategoryId) ?? null : null
   );
   const setCategories = useCategoryStore((s) => s.setCategories);
 
@@ -61,13 +61,19 @@ export default function HomeClient({
   const fetchNextPage = useProductStore((s) => s.fetchNextPage);
   const setStoreActiveCategory = useProductStore((s) => s.setActiveCategory);
 
+  const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
+  const isCartOpen = useUIStore((s) => s.isCartOpen);
+  const closeSidebar = useUIStore((s) => s.closeSidebar);
+  const closeCart = useUIStore((s) => s.closeCart);
+
+  // Инициализация
   useEffect(() => {
     setDomain(domain);
     setCategories(categories);
     initProducts(initialProducts, total, initialPage, limit);
-    isInitialMount.current = false;
   }, []);
 
+  // Смена категории
   useEffect(() => {
     if (isFirstCategoryChange.current) {
       isFirstCategoryChange.current = false;
@@ -78,6 +84,7 @@ export default function HomeClient({
     fetchNextPage();
   }, [activeCategoryId]);
 
+  // Debounced поиск
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (searchInput !== search) {
@@ -87,30 +94,9 @@ export default function HomeClient({
       }
     }, 1000);
     return () => clearTimeout(timeout);
-  }, [searchInput]);
+  }, [searchInput, search]);
 
-  const lastElementRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (observerRef.current) observerRef.current.disconnect();
-
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
-          fetchNextPage();
-        }
-      });
-
-      if (node) observerRef.current.observe(node);
-    },
-    [hasMore, isLoading, fetchNextPage]
-  );
-
-  const displayedProducts = products;
-
-  const toggleSidebar = () => setIsSidebarOpen((v) => !v);
-  const closeSidebar = () => setIsSidebarOpen(false);
-  const toggleCart = () => setIsCartOpen((v) => !v);
-  const closeCart = () => setIsCartOpen(false);
-
+  // Блокировка скролла
   useEffect(() => {
     document.body.style.overflow = isSidebarOpen || isCartOpen ? 'hidden' : '';
     return () => {
@@ -118,13 +104,54 @@ export default function HomeClient({
     };
   }, [isSidebarOpen, isCartOpen]);
 
-  const productWord = (n: number) => {
-    const mod10 = n % 10;
-    const mod100 = n % 100;
-    if (mod10 === 1 && mod100 !== 11) return 'товар';
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'товара';
-    return 'товаров';
-  };
+  // Intersection Observer для infinite scroll
+  const lastElementRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (observerRef.current) observerRef.current.disconnect();
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          fetchNextPage();
+        }
+      });
+      if (node) observerRef.current.observe(node);
+    },
+    [hasMore, isLoading, fetchNextPage]
+  );
+
+  // Мемоизация сетки товаров
+  const productRows = useMemo(() => {
+    const rows = [];
+    const totalRows = Math.ceil(products.length / 2);
+    for (let rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+      const firstIndex = rowIndex * 2;
+      rows.push({
+        rowIndex,
+        first: products[firstIndex],
+        second: products[firstIndex + 1],
+        isEvenRow: rowIndex % 2 === 0,
+        isLastRow: firstIndex + 2 >= products.length,
+      });
+    }
+    return rows;
+  }, [products]);
+
+  // Мемоизация текста статистики
+  const statsText = useMemo(() => {
+    const word = productWord(products.length);
+    const suffix = hasMore ? ` (загружено из ${total})` : '';
+    return `${products.length} ${word}${suffix}`;
+  }, [products.length, hasMore, total]);
+
+  // Мемоизация заголовка категории
+  const categoryTitle = useMemo(
+    () => (activeCategory?.name.toUpperCase() || 'CATALOG'),
+    [activeCategory?.name]
+  );
+
+  // Мемоизация коллбэка ввода поиска
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+  }, []);
 
   return (
     <main className="min-h-screen relative">
@@ -135,30 +162,25 @@ export default function HomeClient({
       </div>
 
       <div className="relative z-10">
-        <Header onMenuToggle={toggleSidebar} onCartToggle={toggleCart} cartItemsCount={totalItems} />
-
         <div className="flex pt-20 md:pt-24">
           {isSidebarOpen && (
             <div
-              className="fixed inset-0 bg-black/60 z-55 md:hidden backdrop-blur-sm transition-opacity duration-300"
+              className="fixed inset-0 bg-black/60 z-[55] md:hidden backdrop-blur-sm transition-opacity duration-300"
               onClick={closeSidebar}
             />
           )}
 
           <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-          <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
+          <CartDrawer />
 
           <div className="flex-1 md:ml-64 p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
               <div>
                 <span className="text-red-500 text-sm">01 —</span>
                 <h2 className="text-2xl sm:text-3xl font-light tracking-wider mt-1">
-                  {activeCategory?.name.toUpperCase() || 'CATALOG'}
+                  {categoryTitle}
                 </h2>
-                <p className="text-xs text-white/40 tracking-wider mt-1">
-                  {displayedProducts.length} {productWord(displayedProducts.length)}
-                  {hasMore && <span className="ml-1 opacity-60">(загружено из {total})</span>}
-                </p>
+                <p className="text-xs text-white/40 tracking-wider mt-1">{statsText}</p>
               </div>
 
               <div className="glass-card px-4 py-2 flex items-center gap-3 w-full sm:w-64">
@@ -166,14 +188,14 @@ export default function HomeClient({
                 <input
                   type="text"
                   value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  onChange={handleSearchChange}
                   placeholder="SEARCH"
                   className="bg-transparent text-xs text-white/60 placeholder-white/30 outline-none w-full tracking-wider"
                 />
               </div>
             </div>
 
-            {displayedProducts.length === 0 && !isLoading ? (
+            {products.length === 0 && !isLoading ? (
               <div className="glass-card p-16 text-center">
                 <p className="text-white/40 tracking-widest text-sm">ТОВАРЫ НЕ НАЙДЕНЫ</p>
                 <p className="text-white/25 text-xs mt-2">
@@ -182,49 +204,41 @@ export default function HomeClient({
               </div>
             ) : (
               <div className="space-y-6">
-                {Array.from({ length: Math.ceil(displayedProducts.length / 2) }).map((_, rowIndex) => {
-                  const firstIndex = rowIndex * 2;
-                  const first = displayedProducts[firstIndex];
-                  const second = displayedProducts[firstIndex + 1];
-                  const isEvenRow = rowIndex % 2 === 0;
-                  const isLastRow = firstIndex + 2 >= displayedProducts.length;
-
-                  return (
-                    <div
-                      key={rowIndex}
-                      ref={isLastRow ? lastElementRef : null}
-                      className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start"
-                    >
-                      {isEvenRow ? (
-                        <>
-                          {first && (
-                            <div className="col-span-1 xl:col-span-2 h-full">
-                              <ProductCard product={first} featured={false} />
-                            </div>
-                          )}
-                          {second && (
-                            <div className="col-span-1 xl:col-span-1 h-full">
-                              <ProductCard product={second} featured={false} />
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {first && (
-                            <div className="col-span-1 xl:col-span-1 h-full">
-                              <ProductCard product={first} featured={false} />
-                            </div>
-                          )}
-                          {second && (
-                            <div className="col-span-1 xl:col-span-2 h-full">
-                              <ProductCard product={second} featured={false} />
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
-                })}
+                {productRows.map((row) => (
+                  <div
+                    key={row.rowIndex}
+                    ref={row.isLastRow ? lastElementRef : null}
+                    className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start"
+                  >
+                    {row.isEvenRow ? (
+                      <>
+                        {row.first && (
+                          <div className="col-span-1 xl:col-span-2 h-full">
+                            <ProductCard product={row.first} featured={false} />
+                          </div>
+                        )}
+                        {row.second && (
+                          <div className="col-span-1 xl:col-span-1 h-full">
+                            <ProductCard product={row.second} featured={false} />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {row.first && (
+                          <div className="col-span-1 xl:col-span-1 h-full">
+                            <ProductCard product={row.first} featured={false} />
+                          </div>
+                        )}
+                        {row.second && (
+                          <div className="col-span-1 xl:col-span-2 h-full">
+                            <ProductCard product={row.second} featured={false} />
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ))}
 
                 {isLoading && (
                   <div className="flex justify-center py-8">
@@ -232,7 +246,7 @@ export default function HomeClient({
                   </div>
                 )}
 
-                {!hasMore && displayedProducts.length > 0 && (
+                {!hasMore && products.length > 0 && (
                   <div className="text-center py-8">
                     <p className="text-white/30 text-xs tracking-widest">— КОНЕЦ СПИСКА —</p>
                   </div>
@@ -245,8 +259,6 @@ export default function HomeClient({
 
       <div className="fixed top-0 left-0 w-px h-full bg-linear-to-b from-red-500/50 via-red-500/20 to-transparent z-50 pointer-events-none" />
       <div className="fixed top-0 right-0 w-px h-full bg-linear-to-b from-transparent via-red-500/20 to-red-500/50 z-50 pointer-events-none" />
-
-      <ToastContainer />
     </main>
   );
 }

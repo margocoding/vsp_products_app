@@ -1,8 +1,10 @@
 "use client";
 
+import { useMemo, useCallback } from "react";
 import { ordersApi } from "@/api/orders.api";
 import { getImageUrl } from "@/common/utils";
 import { useCartStore } from "@/store/cartStore";
+import { useUIStore } from "@/store/uiStore";
 import { useProductStore } from "@/store/productStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -23,11 +25,6 @@ import { z } from "zod";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 
-interface CartDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 const checkoutSchema = z.object({
   email: z
     .string()
@@ -41,19 +38,27 @@ const checkoutSchema = z.object({
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
-export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
-  const items = useCartStore((state) => state.items);
-  const updateQuantity = useCartStore((state) => state.updateQuantity);
-  const removeItem = useCartStore((state) => state.removeItem);
-  const clearCart = useCartStore((state) => state.clearCart);
-  const totalItems = useCartStore((state) => state.totalItems());
-  const totalPrice = useCartStore((state) => state.totalPrice());
+// Вспомогательная функция для склонения
+const itemsWord = (n: number) => {
+  if (n === 1) return "ТОВАР";
+  if (n >= 2 && n <= 4) return "ТОВАРА";
+  return "ТОВАРОВ";
+};
 
-  // Актуальные остатки с сервера
+export default function CartDrawer() {
+  const isCartOpen = useUIStore((s) => s.isCartOpen);
+  const closeCart = useUIStore((s) => s.closeCart);
+
+  const items = useCartStore((s) => s.items);
+  const updateQuantity = useCartStore((s) => s.updateQuantity);
+  const removeItem = useCartStore((s) => s.removeItem);
+  const clearCart = useCartStore((s) => s.clearCart);
+  const totalItems = useCartStore((s) => s.totalItems());
+  const totalPrice = useCartStore((s) => s.totalPrice());
+
   const products = useProductStore((s) => s.products);
-  const getAvailable = (productId: string) =>
-    products.find((p) => p.id === productId)?.quantity ?? 0;
 
+  // Form
   const {
     register,
     handleSubmit,
@@ -64,71 +69,138 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     mode: "onBlur",
   });
 
-  const onSubmit = async (data: CheckoutFormData) => {
-    // Проверяем, не превышен ли остаток по всем товарам
-    for (const item of items) {
+  // Мемоизация: мапа доступных остатков по ID товара
+  const availableMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const p of products) {
+      map.set(p.id, p.quantity ?? 0);
+    }
+    return map;
+  }, [products]);
+
+  const getAvailable = useCallback(
+    (productId: string) => availableMap.get(productId) ?? 0,
+    [availableMap],
+  );
+
+  // Мемоизация: отрендеренные элементы корзины
+  const cartItems = useMemo(() => {
+    return items.map((item) => {
       const available = getAvailable(item.id);
-      if (available <= 0) {
-        toast.error(`Товар "${item.name}" закончился на складе`, {
-          position: "top-right",
-        });
-        return;
+      const isOutOfStock = available <= 0;
+      const exceedsStock = item.quantity > available;
+
+      return {
+        item,
+        available,
+        isOutOfStock,
+        exceedsStock,
+        total: item.price * item.quantity,
+      };
+    });
+  }, [items, getAvailable]);
+
+  // Обработчик отправки формы
+  const onSubmit = useCallback(
+    async (data: CheckoutFormData) => {
+      // Валидация остатков перед отправкой
+      for (const entry of cartItems) {
+        if (entry.isOutOfStock) {
+          toast.error(`Товар "${entry.item.name}" закончился на складе`, {
+            position: "top-right",
+          });
+          return;
+        }
+        if (entry.exceedsStock) {
+          toast.error(
+            `Недостаточно "${entry.item.name}". Доступно: ${entry.available} шт`,
+            { position: "top-right" },
+          );
+          return;
+        }
       }
-      if (item.quantity > available) {
-        toast.error(`Недостаточно "${item.name}". Доступно: ${available} шт`, {
-          position: "top-right",
+
+      const orderItems = items.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      }));
+
+      try {
+        await ordersApi.create({
+          email: data.email,
+          comment: data.comment,
+          items: orderItems,
         });
-        return;
+
+        toast.success("Заказ успешно оформлен! Мы свяжемся с вами.", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: true,
+        });
+
+        clearCart();
+        reset();
+        closeCart();
+      } catch (error: any) {
+        const msg = error?.response?.data?.message;
+        toast.error(
+          Array.isArray(msg)
+            ? msg[0]
+            : msg || "Не удалось оформить заказ. Попробуйте ещё раз.",
+          { position: "top-right", autoClose: 5000 },
+        );
       }
-    }
+    },
+    [cartItems, items, clearCart, reset, closeCart],
+  );
 
-    const orderItems = items.map((item) => ({
-      productId: item.id,
-      quantity: item.quantity,
-    }));
+  // Обработчики количества
+  const handleDecrement = useCallback(
+    (id: string, current: number, available: number) => {
+      if (current <= 1) return;
+      updateQuantity(id, current - 1, available);
+    },
+    [updateQuantity],
+  );
 
-    try {
-      await ordersApi.create({
-        email: data.email,
-        comment: data.comment,
-        items: orderItems,
-      });
+  const handleIncrement = useCallback(
+    (id: string, current: number, available: number) => {
+      if (current >= available) return;
+      updateQuantity(id, current + 1, available);
+    },
+    [updateQuantity],
+  );
 
-      toast.success("Заказ успешно оформлен! Мы свяжемся с вами.", {
-        position: "top-right",
-        autoClose: 4000,
-        hideProgressBar: true,
-      });
+  // Закрытие по клику на оверлей
+  const handleOverlayClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget) closeCart();
+    },
+    [closeCart],
+  );
 
-      clearCart();
-      reset();
-      onClose();
-    } catch (error: any) {
-      const msg = error?.response?.data?.message;
-      toast.error(
-        Array.isArray(msg)
-          ? msg[0]
-          : msg || "Не удалось оформить заказ. Попробуйте ещё раз.",
-        { position: "top-right", autoClose: 5000 },
-      );
-    }
-  };
+  // Форматирование цены
+  const formatPrice = useCallback((value: number) => {
+    return value.toLocaleString("ru-RU");
+  }, []);
 
   return (
     <>
-      {isOpen && (
+      {/* Overlay */}
+      {isCartOpen && (
         <div
-          className="fixed inset-0 bg-black/60 z-55 backdrop-blur-sm transition-opacity duration-300"
-          onClick={onClose}
+          className="fixed inset-0 bg-black/60 z-[55] backdrop-blur-sm transition-opacity duration-300"
+          onClick={handleOverlayClick}
         />
       )}
 
+      {/* Drawer */}
       <aside
         className={`
-          fixed inset-y-0 right-0 z-60 w-full sm:w-105 bg-black/95 backdrop-blur-xl border-l border-white/10
-          transform transition-transform duration-300 ease-in-out flex flex-col
-          ${isOpen ? "translate-x-0" : "translate-x-full"}
-        `}
+    fixed inset-y-0 right-0 z-[60] w-full sm:w-[26.25rem] bg-black/95 backdrop-blur-xl border-l border-white/10
+    transform transition-transform duration-300 ease-in-out flex flex-col
+    ${isCartOpen ? "translate-x-0" : "translate-x-full"}
+  `}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 shrink-0">
@@ -141,27 +213,22 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 КОРЗИНА
               </h2>
               <p className="text-[10px] text-white/40 tracking-widest mt-0.5">
-                {totalItems}{" "}
-                {totalItems === 1
-                  ? "ТОВАР"
-                  : totalItems < 5
-                    ? "ТОВАРА"
-                    : "ТОВАРОВ"}
+                {totalItems} {itemsWord(totalItems)}
               </p>
             </div>
           </div>
           <button
-            onClick={onClose}
+            onClick={closeCart}
             className="text-white/50 hover:text-white transition-colors p-1.5 hover:bg-white/5 rounded-lg"
-            aria-label="Close cart"
+            aria-label="Закрыть корзину"
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Scrollable Items List */}
+        {/* Scrollable Items */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {items.length === 0 ? (
+          {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-5">
                 <ShoppingBag size={36} className="text-white/20" />
@@ -174,16 +241,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               </p>
             </div>
           ) : (
-            items.map((item) => {
-              const available = getAvailable(item.id);
-              const isOutOfStock = available <= 0;
-              const exceedsStock = item.quantity > available;
-
-              return (
+            cartItems.map(
+              ({ item, available, isOutOfStock, exceedsStock, total }) => (
                 <div
                   key={item.id}
                   className="glass-card p-4 flex gap-4 group hover:border-red-500/30 transition-colors"
                 >
+                  {/* Image */}
                   <div className="w-20 h-20 rounded-lg overflow-hidden bg-white/5 border border-white/10 shrink-0 relative">
                     {item.image ? (
                       <Image
@@ -211,6 +275,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     )}
                   </div>
 
+                  {/* Content */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
@@ -235,7 +300,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       <button
                         onClick={() => removeItem(item.id)}
                         className="text-white/30 hover:text-red-500 transition-colors p-1 shrink-0 hover:bg-red-500/10 rounded"
-                        aria-label="Remove item"
+                        aria-label="Удалить товар"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -252,15 +317,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </div>
                     )}
 
+                    {/* Quantity + Price */}
                     <div className="flex items-center justify-between mt-3">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() =>
-                            updateQuantity(
-                              item.id,
-                              item.quantity - 1,
-                              available,
-                            )
+                            handleDecrement(item.id, item.quantity, available)
                           }
                           disabled={item.quantity <= 1 || isOutOfStock}
                           className="w-7 h-7 rounded border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
@@ -272,11 +334,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         </span>
                         <button
                           onClick={() =>
-                            updateQuantity(
-                              item.id,
-                              item.quantity + 1,
-                              available,
-                            )
+                            handleIncrement(item.id, item.quantity, available)
                           }
                           disabled={item.quantity >= available || isOutOfStock}
                           className="w-7 h-7 rounded border border-white/20 flex items-center justify-center text-white/60 hover:border-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
@@ -286,21 +344,19 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold text-white">
-                          {(
-                            parseFloat(item.price) * item.quantity
-                          ).toLocaleString("ru-RU")}
+                          {formatPrice(total)}
                           <span className="text-red-500 ml-1 text-xs">₽</span>
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
-              );
-            })
+              ),
+            )
           )}
         </div>
 
-        {/* Fixed Footer */}
+        {/* Footer */}
         {items.length > 0 && (
           <div className="border-t border-white/10 px-6 py-5 space-y-4 shrink-0 bg-black/80 backdrop-blur-xl">
             <div className="flex items-end justify-between pb-2">
@@ -309,7 +365,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   ИТОГО К ОПЛАТЕ
                 </p>
                 <p className="text-2xl font-bold text-white">
-                  {totalPrice.toLocaleString("ru-RU")}
+                  {formatPrice(totalPrice)}
                   <span className="text-red-500 ml-1 text-base">₽</span>
                 </p>
               </div>
