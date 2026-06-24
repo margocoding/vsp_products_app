@@ -7,8 +7,8 @@ interface CartItem {
   id: string;
   name: string;
   subtitle?: string;
-  image: string;
-  price: string;
+  image: string | null;
+  price: number;
   quantity: number;
 }
 
@@ -26,14 +26,12 @@ export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
 
   addItem: (product, quantity = 1) => {
-    // Нельзя добавить, если на складе нет
     if (product.quantity <= 0) return;
 
     set((state) => {
       const existing = state.items.find((i) => i.id === product.id);
 
       if (existing) {
-        // Не превышаем остаток
         const newQty = Math.min(existing.quantity + quantity, product.quantity);
         return {
           items: state.items.map((i) =>
@@ -42,7 +40,6 @@ export const useCartStore = create<CartStore>((set, get) => ({
         };
       }
 
-      // Новый товар
       const qty = Math.min(quantity, product.quantity);
       return {
         items: [
@@ -52,7 +49,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
             name: product.name,
             subtitle: product.subtitle,
             image: product.image,
-            price: product.price,
+            price: +product.price,
             quantity: qty,
           },
         ],
@@ -86,7 +83,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
 
   totalPrice: () =>
     get().items.reduce((sum, i) => {
-      const price = parseFloat(i.price);
+      const price = typeof i.price === 'string' ? parseFloat(i.price) : i.price;
       return sum + (isNaN(price) ? 0 : price * i.quantity);
     }, 0),
 }));
