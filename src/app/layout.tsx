@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import { CheckCircle2 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import CartDrawer from "@/components/Cart";
+import Footer from "@/components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,10 +19,13 @@ const geistMono = Geist_Mono({
 });
 
 const siteName = "AllRailways";
-const siteDesc = "All Railways — профессиональное железнодорожное оборудование и комплектующие с доставкой по всей России.";
+const siteDesc =
+  "All Railways — профессиональное железнодорожное оборудование и комплектующие с доставкой по всей России.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  ),
   title: {
     default: siteName,
     template: `%s — ${siteName}`,
@@ -64,8 +68,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Header />
-        <CartDrawer/>
+        <CartDrawer />
         {children}
+        <Footer />
         <ToastContainer
           position="top-right"
           toastClassName="bg-black/90 backdrop-blur-xl border border-red-500/30 text-white rounded-lg shadow-[0_0_20px_rgba(255,40,40,0.15)]"
