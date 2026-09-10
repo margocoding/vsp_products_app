@@ -17,6 +17,42 @@ const conditionLabels: Record<string, string> = {
   RESERVED: 'Резерв',
 };
 
+// Вспомогательная функция для получения цветов по статусу
+const getConditionStyles = (condition?: string) => {
+  switch (condition) {
+    case 'NEW':
+      return {
+        badge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
+        dot: 'bg-emerald-500',
+        text: 'text-emerald-400',
+      };
+    case 'USED':
+      return {
+        badge: 'bg-amber-500/20 text-amber-400 border-amber-500/40',
+        dot: 'bg-amber-500',
+        text: 'text-amber-400',
+      };
+    case 'REFURBISHED':
+      return {
+        badge: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
+        dot: 'bg-blue-500',
+        text: 'text-blue-400',
+      };
+    case 'RESERVED':
+      return {
+        badge: 'bg-red-500/20 text-red-400 border-red-500/40',
+        dot: 'bg-red-500',
+        text: 'text-red-400',
+      };
+    default:
+      return {
+        badge: 'bg-white/10 text-white/60 border-white/20',
+        dot: 'bg-white/50',
+        text: 'text-white/60',
+      };
+  }
+};
+
 export default function ProductCard({ product, featured = false }: ProductCardProps) {
   const available = product.quantity ?? 0;
   const isInStock = available > 0;
@@ -25,6 +61,9 @@ export default function ProductCard({ product, featured = false }: ProductCardPr
   const displayChars = characteristics.slice(0, maxVisibleChars);
   const unitLabel = product.unit ?? 'шт';
   const currencySymbol = product.priceUnit === 'RUB' ? '₽' : product.priceUnit;
+  
+  const conditionLabel = product.condition ? (conditionLabels[product.condition] || product.condition) : null;
+  const conditionStyles = getConditionStyles(product.condition);
 
   const formattedPrice = Number(product.price).toLocaleString('ru-RU');
   const productUrl = `/products/${product.slug}`;
@@ -124,7 +163,20 @@ export default function ProductCard({ product, featured = false }: ProductCardPr
               </div>
             )}
 
-            <div className={`space-y-3 pt-3 border-t border-white/10 ${featured ? 'col-span-2 md:col-span-3 lg:col-span-4' : ''}`}>
+            <div className={`space-y-4 pt-3 border-t border-white/10 ${featured ? 'col-span-2 md:col-span-3 lg:col-span-4' : ''}`}>
+              {/* Акцент на статусе */}
+              {conditionLabel && (
+                <div className="space-y-1">
+                  <span className="text-white/30 uppercase tracking-wider text-xs block">Состояние</span>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full animate-pulse ${conditionStyles.dot}`} />
+                    <p className={`font-medium tracking-wider text-xs uppercase ${conditionStyles.text}`}>
+                      {conditionLabel}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-1">
                 <span className="text-white/30 uppercase tracking-wider text-xs block">НДС</span>
                 <div className="flex items-center gap-2">
@@ -139,6 +191,12 @@ export default function ProductCard({ product, featured = false }: ProductCardPr
 
           <div className="shrink-0 w-44">
             <Link href={productUrl} className="block relative w-full aspect-square rounded-xl overflow-hidden border border-white/10 bg-white/5 focus:outline-none focus:ring-2 focus:ring-red-500/50">
+              {/* Бейдж на картинке */}
+              {product.condition && (
+                <span className={`absolute top-2.5 left-2.5 z-10 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-lg backdrop-blur-md border ${conditionStyles.badge}`}>
+                  {conditionLabel}
+                </span>
+              )}
               {product.image ? (
                 <Image
                   src={getImageUrl(product.image)}

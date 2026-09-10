@@ -293,8 +293,8 @@ export default function CartDrawer() {
                           }`}
                         >
                           {isOutOfStock
-                            ? "Нет в наличии"
-                            : `На складе: ${available} шт`}
+                            ?? "Нет в наличии"
+                            }
                         </p>
                       </div>
                       <button

@@ -262,11 +262,6 @@ export default async function ProductPage({ params }: PageProps) {
                       {isInStock ? "В наличии" : "Нет"}
                     </p>
                   </div>
-                  {isInStock && (
-                    <p className="text-white/40 text-xs mt-0.5">
-                      {available} {unitLabel} на складе
-                    </p>
-                  )}
                 </div>
               </div>
 
