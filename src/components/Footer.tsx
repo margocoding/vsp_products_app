@@ -1,19 +1,12 @@
 'use client';
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Phone, Mail, MapPin, Train } from "lucide-react";
 
 export default function Footer() {
-  const pathname = usePathname();
-
-  const hasSidebar = pathname === '/' || pathname === '';
-
   return (
     <footer
-      className={`mt-auto relative overflow-hidden transition-all duration-300 ${
-        hasSidebar ? 'md:ml-64' : ''
-      }`}
+      className="site-footer mt-auto relative overflow-hidden transition-all duration-300"
     >
       {/* Фоновые градиенты */}
       <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-0)] via-[var(--bg-1)] to-transparent pointer-events-none" />

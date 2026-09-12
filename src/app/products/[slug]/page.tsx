@@ -150,7 +150,7 @@ export default async function ProductPage({ params }: PageProps) {
         {" "}
         {/* Back link */}
         <Link
-          href="/"
+          href="/catalog"
           className="inline-flex items-center gap-2 text-white/40 hover:text-red-400 transition-colors text-sm tracking-wider uppercase mb-8 group"
         >
           <ArrowLeft
