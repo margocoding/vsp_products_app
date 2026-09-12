@@ -1,133 +1,79 @@
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
 import { ChevronRight, ChevronDown, X } from 'lucide-react';
-import { useCategoryStore } from '@/store/categoryStore';
+import { catalogHref, flattenCategories } from '@/lib/catalog';
 import type { Category } from '@/types/types';
 
 interface SidebarProps {
+  categories: Category[];
+  activeCategoryId: string | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const {
-    getRootCategories,
-    getChildCategories,
-    activeCategoryId,
-    setActiveCategory,
-    expandedCategoryIds,
-    toggleExpanded,
-  } = useCategoryStore();
-
-  const rootCategories = getRootCategories();
-
-  const handleCategoryClick = (
-    id: string,
-    hasChildren: boolean,
-    isMobile: boolean,
-  ) => {
-    setActiveCategory(id);
-    if (hasChildren) {
-      toggleExpanded(id);
-    }
-    if (isMobile) {
-      onClose();
-    }
-  };
-
-  const renderCategory = (category: Category, isMobile: boolean) => {
-    const children = getChildCategories(category.id);
-    const hasChildren = (children?.length || 0) > 0;
-    const isActive = activeCategoryId === category.id;
-    const isExpanded = expandedCategoryIds.includes(category.id);
-
-
-    return (
-      <div key={category.id}>
-        {/* Корневая категория */}
-        <button
-          onClick={() => handleCategoryClick(category.id, hasChildren, isMobile)}
-          className={`sidebar-item w-full flex items-center justify-between px-4 py-3 text-xs tracking-wider transition-colors ${
-            isActive ? 'active text-red-500' : 'text-white/50 hover:text-white'
-          }`}
-        >
-          <span className="text-left flex-1 truncate">{category.name}</span>
-          {hasChildren ? (
-            isExpanded ? (
-              <ChevronDown size={14} className="shrink-0 ml-2" />
-            ) : (
-              <ChevronRight size={14} className="shrink-0 ml-2" />
-            )
-          ) : isActive ? (
-            <ChevronRight size={14} className="shrink-0 ml-2" />
-          ) : null}
-        </button>
-
-        {/* Подкатегории (только 1 уровень глубины) */}
-        {hasChildren && isExpanded && (
-          <div className="space-y-0.5">
-            {children?.map((child) => (
-              <button
-                key={child.id}
-                onClick={() => handleCategoryClick(child.id, false, isMobile)}
-                className={`sidebar-item w-full flex items-center justify-between px-4 py-3 pl-8 text-xs tracking-wider transition-colors ${
-                  activeCategoryId === child.id
-                    ? 'active text-red-500'
-                    : 'text-white/50 hover:text-white'
-                }`}
-              >
-                <span className="text-left flex-1 truncate">{child.name}</span>
-                {activeCategoryId === child.id && (
-                  <ChevronRight size={14} className="shrink-0 ml-2" />
-                )}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  const renderMenuItems = (isMobile: boolean) => (
-    <div className="space-y-0.5">
-      {rootCategories.map((cat) => renderCategory(cat, isMobile))}
-    </div>
-  );
+function CategoryItem({
+  category,
+  activeCategoryId,
+  onClose,
+}: Pick<SidebarProps, 'activeCategoryId' | 'onClose'> & { category: Category }) {
+  const [expanded, setExpanded] = useState<boolean>();
+  const children = category.children ?? [];
+  const containsActive = flattenCategories(children).some((item) => item.id === activeCategoryId);
+  const isExpanded = expanded ?? containsActive;
+  const isActive = category.id === activeCategoryId;
 
   return (
-    <>
-      {/* Мобильный сайдбар */}
-      <aside
-        className={`
-          fixed inset-y-0 left-0 z-60 w-96 bg-black/95 backdrop-blur-xl border-r border-white/10
-          transform transition-transform duration-300 ease-in-out md:hidden
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}
-      >
-        <div className="flex items-center justify-between p-4 border-b border-white/10">
-          <span className="text-xs tracking-widest text-white/50">МЕНЮ</span>
+    <li>
+      <div className={`catalog-category sidebar-item${isActive ? ' active' : ''}`}>
+        <Link
+          href={catalogHref(category.id)}
+          onClick={onClose}
+          title={category.name}
+          aria-current={isActive ? 'page' : undefined}
+        >
+          <span>{category.name}</span>
+          {isActive && !children.length && <ChevronRight size={12} />}
+        </Link>
+        {children.length > 0 && (
           <button
-            onClick={onClose}
-            className="text-white/50 hover:text-white transition-colors p-1"
-            aria-label="Close menu"
+            onClick={() => setExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? 'Свернуть' : 'Развернуть'}: ${category.name}`}
           >
-            <X size={18} />
+            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
           </button>
-        </div>
+        )}
+      </div>
+      {children.length > 0 && isExpanded && (
+        <ul className="catalog-subcategories">
+          {children.map((child) => (
+            <CategoryItem key={child.id} category={child} activeCategoryId={activeCategoryId} onClose={onClose} />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+}
 
-        <nav className="p-4 overflow-y-auto overflow-x-hidden h-[calc(100%-65px)]">
-          {renderMenuItems(true)}
+export default function Sidebar({ categories, activeCategoryId, isOpen, onClose }: SidebarProps) {
+  return (
+    <aside id="catalog-menu" className={`catalog-sidebar${isOpen ? ' is-open' : ''}`}>
+      <div className="catalog-sidebar-panel glass-card">
+        <div className="catalog-sidebar-heading">
+          <span>Меню</span>
+          <button onClick={onClose} aria-label="Закрыть категории" className="text-white/50 hover:text-white transition-colors p-1"><X size={18} /></button>
+        </div>
+        <nav aria-label="Категории товаров">
+          <ul>
+            {categories.map((category) => (
+              <CategoryItem key={category.id} category={category} activeCategoryId={activeCategoryId} onClose={onClose} />
+            ))}
+          </ul>
+          {!categories.length && <p className="catalog-menu-empty">Категории пока недоступны</p>}
         </nav>
-      </aside>
-
-      {/* Десктопный сайдбар */}
-      <aside className="hidden md:block w-64 fixed left-0 top-24 bottom-0 z-40 px-4">
-        <div className="glass-card p-4 h-full overflow-hidden flex flex-col">
-          <nav className="flex-1 overflow-y-auto overflow-x-hidden space-y-0.5">
-            {renderMenuItems(false)}
-          </nav>
-        </div>
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 }

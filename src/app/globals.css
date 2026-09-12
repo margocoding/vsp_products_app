@@ -293,3 +293,114 @@ body {
 .Toastify__close-button:hover {
   color: #ff5555 !important;
 }
+
+.site-logo-link { display: block; flex-shrink: 0; margin-right: auto; }
+.site-logo { display: block; width: 180px; height: 48px; object-fit: contain; object-position: left center; }
+.catalog-toggle { display: none; }
+.header-search { position: relative; width: 256px; max-width: 45%; flex-shrink: 1; color: var(--text-2); }
+.header-search input { width: 100%; min-width: 0; height: 36px; padding: 8px 12px 8px 36px; font-size: 12px; letter-spacing: .05em; }
+.header-search button { position: absolute; inset: 0 auto 0 8px; display: grid; place-items: center; width: 20px; cursor: pointer; transition: color .15s ease; }
+.header-search button:hover { color: var(--text-0); }
+.header-cart { flex-shrink: 0; cursor: pointer; }
+.site-header button:focus-visible,
+.site-header a:focus-visible,
+.catalog-sidebar a:focus-visible,
+.catalog-sidebar button:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 3px; }
+
+.catalog-main { margin-left: 256px; padding: 128px 32px 32px; }
+.catalog-sidebar { position: fixed; top: 96px; bottom: 0; left: 0; z-index: 40; width: 256px; padding-inline: 16px; }
+.catalog-sidebar-panel { display: flex; flex-direction: column; height: 100%; padding: 16px; overflow: hidden; }
+.catalog-sidebar nav { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+.catalog-sidebar ul { list-style: none; margin: 0; padding: 0; }
+.catalog-sidebar li + li { margin-top: 2px; }
+.catalog-sidebar-heading { display: none; }
+.catalog-category { display: flex; align-items: stretch; }
+.catalog-category > a { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; padding: 12px 16px; font-size: 12px; line-height: 16px; letter-spacing: .05em; }
+.catalog-category > a span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.catalog-category > a svg { flex-shrink: 0; margin-left: auto; }
+.catalog-category > button { flex-shrink: 0; padding-right: 12px; cursor: pointer; }
+.catalog-sidebar .catalog-subcategories { padding-left: 16px; }
+.catalog-menu-empty { padding: 8px; font-size: 12px; color: var(--text-1); }
+.catalog-menu-backdrop { display: none; }
+body:has(.catalog-shell) .site-footer { margin-inline-start: 256px; }
+
+.railway-hero { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px; align-items: center; }
+.railway-hero-copy { min-width: 0; padding: 24px; }
+.railway-eyebrow { display: flex; align-items: center; gap: 8px; color: var(--accent); font-size: 11px; line-height: 1.5; letter-spacing: .05em; text-transform: uppercase; }
+.railway-eyebrow::before { content: ''; width: 12px; height: 1px; background: var(--accent); flex-shrink: 0; }
+.railway-hero h1 { margin-top: 16px; font-size: 30px; line-height: 1.2; text-transform: uppercase; }
+.railway-hero h1 strong { display: block; font-weight: 700; }
+.railway-hero h1 em { display: block; color: var(--accent); font-style: normal; }
+.railway-hero h1 > span { display: block; margin-top: 8px; font-size: 24px; font-weight: 300; color: var(--text-1); }
+.railway-intro { margin-top: 24px; color: var(--text-1); font-size: 14px; line-height: 1.55; }
+.railway-intro p + p { position: relative; margin-top: 20px; padding-top: 20px; }
+.railway-intro p + p::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, var(--border-glow), transparent); }
+.railway-hero-art { position: relative; display: grid; align-items: center; align-self: stretch; min-width: 0; min-height: 360px; }
+.railway-sleepers { width: 110%; max-width: none; height: auto; margin-left: -5%; mix-blend-mode: screen; }
+.railway-caption { position: absolute; z-index: 1; color: var(--text-1); font-size: 10px; line-height: 1.4; text-transform: uppercase; }
+.caption-purpose { top: 24px; left: 0; border-left: 3px solid var(--accent); padding-left: 12px; }
+.caption-products { display: flex; gap: 10px; top: 96px; right: 0; }
+.caption-products b { color: var(--accent); font-size: 18px; }
+.caption-quality { right: 0; bottom: 24px; padding-left: 12px; border-left: 3px solid var(--accent); }
+.railway-art-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; stroke: var(--border-glow); stroke-width: 1; }
+.railway-benefits { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.railway-benefit { display: flex; align-items: center; gap: 12px; min-width: 0; min-height: 112px; padding: 16px; }
+.railway-benefit-icon { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; color: var(--accent); }
+.railway-benefit h2 { font-size: 12px; line-height: 1.4; text-transform: uppercase; font-weight: 600; }
+.railway-benefit p { margin-top: 6px; color: var(--text-1); font-size: 11px; line-height: 1.4; }
+
+@media (max-width: 1199px) {
+  .railway-benefits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 1023px) {
+  .catalog-main { padding: 120px 24px 24px; }
+  .railway-hero { grid-template-columns: minmax(0, 1fr); }
+  .railway-hero-art { min-height: 320px; }
+  .railway-sleepers { width: 100%; max-width: 480px; margin-inline: auto; }
+  .caption-purpose { top: 0; }
+  .caption-products { top: 16px; }
+  .caption-quality { bottom: 0; }
+}
+
+@media (max-width: 767px) {
+  .site-header-panel { flex-wrap: wrap; gap: 8px 12px; }
+  .site-logo { width: 150px; height: 40px; }
+  body:has(.catalog-shell) .catalog-toggle { display: grid; place-items: center; }
+  .header-search { order: 1; width: 100%; max-width: none; }
+  .catalog-main { margin-left: 0; padding: 132px 16px 32px; }
+  .site-header ~ main:not(:has(> .pt-20)) { padding-top: 132px; }
+  .site-header ~ main > .pt-20 { padding-top: 132px; }
+  body:has(.catalog-shell) .site-footer { margin-inline-start: 0; }
+  .catalog-sidebar { visibility: hidden; top: 0; bottom: 0; z-index: 60; width: min(384px, calc(100vw - 32px)); padding: 0; background: rgba(0, 0, 0, .95); backdrop-filter: blur(24px); border-right: 1px solid rgba(255, 255, 255, .1); transform: translateX(-100%); transition: transform .3s ease-in-out, visibility .3s; }
+  .catalog-sidebar.is-open { visibility: visible; transform: translateX(0); }
+  .catalog-sidebar-panel, .catalog-sidebar-panel:hover { padding: 0; border: 0; border-radius: 0; background: none; backdrop-filter: none; box-shadow: none; transform: none; }
+  .catalog-sidebar-panel::before { display: none; }
+  .catalog-sidebar-heading { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, .1); color: var(--text-1); text-transform: uppercase; font-size: 12px; letter-spacing: .1em; }
+  .catalog-sidebar nav { padding: 16px; }
+  .catalog-category > a { min-height: 44px; }
+  .catalog-category > button { min-width: 36px; }
+  .catalog-menu-backdrop { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(0, 0, 0, .6); backdrop-filter: blur(4px); }
+  .railway-hero-copy { padding: 20px; }
+  .railway-eyebrow { font-size: 10px; }
+  .railway-hero h1 { font-size: 28px; }
+  .railway-hero h1 > span { font-size: 23px; }
+  .railway-hero-art { min-height: 300px; }
+  .railway-benefits { gap: 16px; }
+  .railway-benefit { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 359px) {
+  .site-logo { width: 130px; }
+  .railway-hero-copy { padding: 16px; }
+  .railway-hero h1 { font-size: 25px; }
+  .railway-hero h1 > span { font-size: 21px; }
+  .railway-eyebrow { font-size: 9px; }
+  .railway-benefits { grid-template-columns: minmax(0, 1fr); }
+  .railway-benefit { flex-direction: row; align-items: center; }
+  .caption-products { font-size: 9px; gap: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .railway-sleepers { animation: none; }
+}
